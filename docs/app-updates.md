@@ -32,3 +32,8 @@ APK скачивается через браузер и устанавливае
 ## Проверенный релиз 1.9
 
 Коммит `3f2cd26` собран и опубликован workflow [43469722647](https://github.com/pdkiller666/Orfeus/actions/runs/43469722647). Результат — [Release `build-1023`](https://github.com/pdkiller666/Orfeus/releases/tag/build-1023) с APK `orfey-android.apk` (Android versionCode 1023). CI прошёл 24 Node-теста, каталог с 4 записями, 15 YIN-проверок и Gradle assembleDebug.
+
+
+## Подготовленная версия 1.10
+
+В каталоге samples manifest загружается простым cross-origin GET: приложение использует `cache: "no-store"` и cache-buster в URL, не выставляя собственный `Cache-Control`. Ручной заголовок запускал CORS preflight, который `raw.githubusercontent.com` отклоняет кодом 403, поэтому клиент без кэшированного manifest показывал ошибку каталога. Добавлены отдельные статусы упражнений уроков, общий прогресс и включение новых данных в текущий JSON export/import. Отметки упражнений не начисляют XP: сохранено существующее правило начисления за явную отметку урока целиком.
