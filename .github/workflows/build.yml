@@ -1,10 +1,21 @@
 name: Build APK
-on: [push, workflow_dispatch]
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+concurrency:
+  group: orfey-release-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version_name: ${{ steps.version.outputs.name }}
+      version_code: ${{ steps.version.outputs.code }}
     steps:
       - uses: actions/checkout@v4
       - name: Validate published sample catalog and audio hashes
@@ -26,10 +37,48 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
+      - id: version
+        name: Determine Android version and build number
+        working-directory: .build/orfey-android
+        run: |
+          set -euo pipefail
+          version_name=$(sed -n 's/.*versionName = "\([^"]*\)".*/\1/p' app/build.gradle.kts | head -n 1)
+          test -n "$version_name"
+          version_code=$((1000 + GITHUB_RUN_NUMBER))
+          echo "name=$version_name" >> "$GITHUB_OUTPUT"
+          echo "code=$version_code" >> "$GITHUB_OUTPUT"
       - name: Assemble debug APK
-        run: gradle assembleDebug --no-daemon
+        run: gradle assembleDebug --no-daemon -PbuildVersionCode=${{ steps.version.outputs.code }}
         working-directory: .build/orfey-android
       - uses: actions/upload-artifact@v4
         with:
           name: orfey-apk
           path: .build/orfey-android/app/build/outputs/apk/debug/app-debug.apk
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: orfey-apk
+          path: release
+      - name: Publish APK as the latest GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BUILD_VERSION_NAME: ${{ needs.build.outputs.version_name }}
+          BUILD_VERSION_CODE: ${{ needs.build.outputs.version_code }}
+          TARGET_SHA: ${{ github.sha }}
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          tag="build-${BUILD_VERSION_CODE}"
+          title="Орфей ${BUILD_VERSION_NAME} (сборка ${BUILD_VERSION_CODE})"
+          notes=$(printf 'APK тестовой сборки Орфея.\n\nВерсия приложения: %s\nКод версии Android: %s\nНомер сборки GitHub Actions: %s\n\nСсылка на APK предназначена для прямой установки на Android. При обновлении устанавливайте поверх текущей версии; Android может попросить разрешить установку из браузера.' \
+            "$BUILD_VERSION_NAME" "$BUILD_VERSION_CODE" "$BUILD_NUMBER")
+          gh release create "$tag" "release/app-debug.apk#orfey-android.apk" \
+            --repo "$GH_REPO" --target "$TARGET_SHA" --title "$title" --notes "$notes" --latest
