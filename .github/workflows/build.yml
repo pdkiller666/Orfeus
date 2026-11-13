@@ -17,6 +17,8 @@ jobs:
       - name: Test app logic
         run: node --test tests/*.test.cjs
         working-directory: .build/orfey-android
+      - name: Verify sample pitches with the app YIN detector
+        run: node scripts/test_samples_audio.cjs .build/orfey-android
       - uses: actions/setup-java@v4
         with:
           distribution: temurin

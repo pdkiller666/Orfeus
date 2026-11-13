@@ -31,6 +31,8 @@ for item in catalog["samples"]:
     seen.add(sample_id)
     if item.get("status") != "approved": fail(f"{sample_id}: non-approved samples must not be in the public manifest")
     if item.get("exerciseId") not in ALLOWED: fail(f"{sample_id}: unknown exercise id")
+    source_type = item.get("sourceType")
+    if source_type not in {"teacher", "synthetic"}: fail(f"{sample_id}: invalid source type")
     if item.get("mimeType") != "audio/wav" or item.get("license") != "CC BY 4.0": fail(f"{sample_id}: unexpected format or license")
     if not isinstance(item.get("title"), str) or not 3 <= len(item["title"]) <= 80: fail(f"{sample_id}: invalid title")
     if not isinstance(item.get("description"), str) or len(item["description"]) > 500: fail(f"{sample_id}: invalid description")
