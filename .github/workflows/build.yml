@@ -7,13 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Validate published sample catalog and audio hashes
+        run: python3 scripts/validate_samples.py
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: Unpack Android source archive
         run: unzip -q orfey-android.zip -d .build
       - name: Test app logic
-        run: node --test tests/core.test.cjs
+        run: node --test tests/*.test.cjs
         working-directory: .build/orfey-android
       - uses: actions/setup-java@v4
         with:
