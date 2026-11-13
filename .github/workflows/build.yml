@@ -1,18 +1,31 @@
 name: Build APK
 on: [push, workflow_dispatch]
+permissions:
+  contents: read
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: unzip -q orfey-android.zip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Unpack Android source archive
+        run: unzip -q orfey-android.zip -d .build
+      - name: Test app logic
+        run: node --test tests/core.test.cjs
+        working-directory: .build/orfey-android
       - uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: 17 }
+        with:
+          distribution: temurin
+          java-version: 17
       - uses: gradle/actions/setup-gradle@v4
-        with: { gradle-version: "8.9" }
-      - run: gradle assembleDebug --no-daemon
-        working-directory: orfey-android
+        with:
+          gradle-version: "8.9"
+      - name: Assemble debug APK
+        run: gradle assembleDebug --no-daemon
+        working-directory: .build/orfey-android
       - uses: actions/upload-artifact@v4
         with:
           name: orfey-apk
-          path: orfey-android/app/build/outputs/apk/debug/app-debug.apk
+          path: .build/orfey-android/app/build/outputs/apk/debug/app-debug.apk
