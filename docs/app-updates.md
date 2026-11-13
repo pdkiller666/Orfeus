@@ -27,3 +27,8 @@ APK скачивается через браузер и устанавливае
 [1]: https://docs.github.com/en/rest/releases/releases "GitHub REST API Releases"
 [2]: https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#permissions "GitHub Actions workflow permissions"
 [3]: https://developer.android.com/distribute/marketing-tools/alternative-distribution "Android alternative app distribution"
+
+
+## Проверенный релиз 1.9
+
+Коммит `3f2cd26` собран и опубликован workflow [43469722647](https://github.com/pdkiller666/Orfeus/actions/runs/43469722647). Результат — [Release `build-1023`](https://github.com/pdkiller666/Orfeus/releases/tag/build-1023) с APK `orfey-android.apk` (Android versionCode 1023). CI прошёл 24 Node-теста, каталог с 4 записями, 15 YIN-проверок и Gradle assembleDebug.
