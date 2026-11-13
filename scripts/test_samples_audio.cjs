@@ -24,16 +24,25 @@ function readWindow(wavPath, atSeconds, frameCount = 4096) {
   return { samples, sampleRate };
 }
 
-const ids = new Set(catalog.samples.map(sample => sample.exerciseId));
-assert.deepEqual(ids, new Set(Object.keys(expected)), 'expected one test sample for each covered exercise');
+const syntheticByExercise = new Map();
 for (const sample of catalog.samples) {
-  assert.equal(sample.sourceType, 'synthetic');
-  for (const [at, targetHz] of expected[sample.exerciseId]) {
+  if (sample.sourceType !== 'synthetic') continue;
+  assert.ok(!syntheticByExercise.has(sample.exerciseId), `duplicate synthetic sample for ${sample.exerciseId}`);
+  syntheticByExercise.set(sample.exerciseId, sample);
+}
+assert.deepEqual(
+  new Set(syntheticByExercise.keys()),
+  new Set(Object.keys(expected)),
+  'expected one synthetic test sample for each covered exercise; teacher samples may coexist'
+);
+for (const [exerciseId, rows] of Object.entries(expected)) {
+  const sample = syntheticByExercise.get(exerciseId);
+  for (const [at, targetHz] of rows) {
     const { samples, sampleRate } = readWindow(path.join(repo, sample.path), at);
     const detectedHz = core.yinPitch(samples, sampleRate);
-    assert.ok(detectedHz > 0, `${sample.exerciseId} at ${at}s: pitch not detected`);
+    assert.ok(detectedHz > 0, `${exerciseId} at ${at}s: pitch not detected`);
     const error = Math.abs(detectedHz - targetHz) / targetHz;
-    assert.ok(error <= 0.025, `${sample.exerciseId} at ${at}s: ${detectedHz.toFixed(1)} Hz, expected ${targetHz.toFixed(1)} Hz`);
+    assert.ok(error <= 0.025, `${exerciseId} at ${at}s: ${detectedHz.toFixed(1)} Hz, expected ${targetHz.toFixed(1)} Hz`);
   }
 }
 console.log(`sample pitch regression passed: ${Object.values(expected).reduce((n, rows) => n + rows.length, 0)} YIN checks`);
