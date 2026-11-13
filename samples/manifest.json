@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updatedAt": "2026-11-13T14:46:42Z",
+  "updatedAt": "2026-11-13T17:00:12.586Z",
   "samples": [
     {
       "id": "b6da3d08-c46d-4d6d-9e17-0b17e19b4001",
@@ -9,8 +9,8 @@
       "description": "Тестовый устойчивый тон 220 Гц без вибрато. Синтезирован программно; это не запись певца и не педагогическая оценка.",
       "recordedBy": "Orfey · программный синтезатор",
       "sourceType": "synthetic",
-      "path": "samples/audio/b6da3d08-c46d-4d6d-9e17-0b17e19b4001.wav",
-      "mimeType": "audio/wav",
+      "path": "samples\/audio\/b6da3d08-c46d-4d6d-9e17-0b17e19b4001.wav",
+      "mimeType": "audio\/wav",
       "sha256": "2ff4caafeb7662d287a86a95ff6b6b12d5d36ae9c93aa5a0f449dd21c9bfb844",
       "sizeBytes": 123524,
       "durationMs": 2800,
@@ -25,8 +25,8 @@
       "description": "Тестовая последовательность C4–D4–C4 с плавными короткими переходами. Синтезирована программно; это не голос человека.",
       "recordedBy": "Orfey · программный синтезатор",
       "sourceType": "synthetic",
-      "path": "samples/audio/b6da3d08-c46d-4d6d-9e17-0b17e19b4002.wav",
-      "mimeType": "audio/wav",
+      "path": "samples\/audio\/b6da3d08-c46d-4d6d-9e17-0b17e19b4002.wav",
+      "mimeType": "audio\/wav",
       "sha256": "6a936f96404862c1c71dcbdc57ea41c9d6cf0e453334e32749095468aab769e4",
       "sizeBytes": 145574,
       "durationMs": 3300,
@@ -41,13 +41,29 @@
       "description": "Тестовая последовательность удерживаемых нот вверх и вниз (110–440 Гц). Синтезирована программно; показывает только высоту сигнала, не диапазон живого голоса.",
       "recordedBy": "Orfey · программный синтезатор",
       "sourceType": "synthetic",
-      "path": "samples/audio/b6da3d08-c46d-4d6d-9e17-0b17e19b4003.wav",
-      "mimeType": "audio/wav",
+      "path": "samples\/audio\/b6da3d08-c46d-4d6d-9e17-0b17e19b4003.wav",
+      "mimeType": "audio\/wav",
       "sha256": "500ec54f9b394c8501e6adf747bf2ec237451ab206c9cb1e8acb39740915a86c",
       "sizeBytes": 291104,
       "durationMs": 6600,
       "license": "CC BY 4.0",
       "createdAt": "2026-11-13T14:46:42Z",
+      "status": "approved"
+    },
+    {
+      "id": "b86b6a06-913b-45a0-9c34-a17bc0211bd6",
+      "exerciseId": "one",
+      "title": "Тест",
+      "description": "Тест",
+      "recordedBy": "Тест",
+      "sourceType": "teacher",
+      "path": "samples\/audio\/b86b6a06-913b-45a0-9c34-a17bc0211bd6.wav",
+      "mimeType": "audio\/wav",
+      "sha256": "9ddbc278d8f06c8d86b27430c3a00d05d6afc476b93080a5c00ea3ceca0307a6",
+      "sizeBytes": 2597534,
+      "durationMs": 29450,
+      "license": "CC BY 4.0",
+      "createdAt": "2026-11-13T17:00:12.586Z",
       "status": "approved"
     }
   ]
