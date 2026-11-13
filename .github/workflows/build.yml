@@ -66,6 +66,8 @@ jobs:
         with:
           name: orfey-apk
           path: release
+      - name: Set stable APK asset name
+        run: mv release/app-debug.apk release/orfey-android.apk
       - name: Publish APK as the latest GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -80,5 +82,5 @@ jobs:
           title="Орфей ${BUILD_VERSION_NAME} (сборка ${BUILD_VERSION_CODE})"
           notes=$(printf 'APK тестовой сборки Орфея.\n\nВерсия приложения: %s\nКод версии Android: %s\nНомер сборки GitHub Actions: %s\n\nСсылка на APK предназначена для прямой установки на Android. При обновлении устанавливайте поверх текущей версии; Android может попросить разрешить установку из браузера.' \
             "$BUILD_VERSION_NAME" "$BUILD_VERSION_CODE" "$BUILD_NUMBER")
-          gh release create "$tag" "release/app-debug.apk#orfey-android.apk" \
+          gh release create "$tag" release/orfey-android.apk \
             --repo "$GH_REPO" --target "$TARGET_SHA" --title "$title" --notes "$notes" --latest
