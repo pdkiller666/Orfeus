@@ -3,7 +3,7 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 
 const repo = path.resolve(__dirname, '..');
-const app = path.resolve(process.argv[2] || path.join(repo, '.build/orfey-android'));
+const app = path.resolve(process.argv[2] || path.join(repo, 'orfey-android'));
 const catalog = JSON.parse(fs.readFileSync(path.join(repo, 'samples/manifest.json'), 'utf8'));
 const core = require(path.join(app, 'app/src/main/assets/core.js'));
 const expected = {

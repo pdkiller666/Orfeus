@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.Orfey" parent="android:Theme.DeviceDefault.NoActionBar">
+        <item name="android:statusBarColor">#8A6212</item>
+        <item name="android:navigationBarColor">#1C1A17</item>
+        <item name="android:windowBackground">#FFFFFF</item>
+    </style>
+</resources>
