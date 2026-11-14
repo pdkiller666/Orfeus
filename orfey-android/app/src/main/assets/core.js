@@ -56,16 +56,10 @@
         break;
       }
     }
-    if (selected < 0) {
-      let best = 1;
-      for (let tau = minTau; tau <= maxTau; tau++) {
-        if (normalized[tau] < best) {
-          best = normalized[tau];
-          selected = tau;
-        }
-      }
-      if (selected < 0 || best > 0.3) return -1;
-    }
+    // Do not turn an arbitrary minimum into a note. On a real phone the
+    // microphone frequently contains room/handling noise and harmonics; a
+    // fallback minimum there produces convincing but unrelated octave jumps.
+    if (selected < 0) return -1;
 
     const left = Math.max(minTau, selected - 1);
     const right = Math.min(maxTau, selected + 1);
