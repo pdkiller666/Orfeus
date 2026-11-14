@@ -17,6 +17,18 @@ function release(code, overrides = {}) {
   };
 }
 
+function fakeElement() {
+  const attributes = new Map();
+  return {
+    textContent: '',
+    hidden: true,
+    onclick: null,
+    setAttribute(name, value) { attributes.set(name, value); },
+    removeAttribute(name) { attributes.delete(name); },
+    getAttribute(name) { return attributes.get(name) || null; }
+  };
+}
+
 test('latest release yields a validated APK version and link', () => {
   assert.deepEqual(Updates.parseLatestRelease(release(1051)), {
     versionCode: 1051,
@@ -43,4 +55,82 @@ test('only a strictly higher versionCode recommends updating', () => {
   assert.equal(Updates.shouldRecommend(latest, 1051), false);
   assert.equal(Updates.shouldRecommend(latest, 1100), false);
   assert.equal(Updates.shouldRecommend(null, 1), false);
+});
+
+test('brand status displays installed version and reveals a working update button only for a newer APK', () => {
+  const version = fakeElement();
+  const button = fakeElement();
+  const doc = {
+    querySelectorAll(selector) {
+      return selector === '[data-app-version]' ? [version] : [button];
+    }
+  };
+  const win = { location: { href: '' } };
+  const latest = Updates.parseLatestRelease(release(1051));
+
+  assert.equal(Updates.formatVersionLabel(' 1.14 '), 'Версия 1.14');
+  Updates.applyBrandStatus(doc, '1.14', latest, win);
+  assert.equal(version.textContent, 'Версия 1.14');
+  assert.equal(button.hidden, false);
+  assert.equal(button.getAttribute('aria-label'), 'Обновить приложение до версии 1.4');
+  button.onclick();
+  assert.equal(win.location.href, latest.downloadUrl);
+
+  Updates.applyBrandStatus(doc, '1.15', null, win);
+  assert.equal(version.textContent, 'Версия 1.15');
+  assert.equal(button.hidden, true);
+  assert.equal(button.onclick, null);
+  assert.equal(button.getAttribute('aria-label'), null);
+});
+
+test('start reads Android version and keeps the update button through app rerenders', async () => {
+  let versionNodes = [fakeElement()];
+  let updateButtons = [fakeElement()];
+  let observerCallback;
+  let scheduledCheck;
+  const storage = new Map();
+  const renderRoot = {};
+  const doc = {
+    readyState: 'complete',
+    body: {},
+    visibilityState: 'visible',
+    getElementById(id) { return id === 'v' ? renderRoot : null; },
+    querySelectorAll(selector) {
+      return selector === '[data-app-version]' ? versionNodes : updateButtons;
+    },
+    addEventListener() {}
+  };
+  const win = {
+    document: doc,
+    OrfeyGitHub: { appVersionCode: () => 1029, appVersionName: () => '1.14' },
+    MutationObserver: class {
+      constructor(callback) { observerCallback = callback; }
+      observe() {}
+    },
+    setTimeout(callback) { scheduledCheck = callback; return 1; },
+    setInterval() { return 2; },
+    localStorage: {
+      getItem(key) { return storage.get(key) || null; },
+      setItem(key, value) { storage.set(key, value); }
+    },
+    fetch: async () => ({
+      ok: true,
+      json: async () => release(1030, { name: 'Орфей 1.15 (сборка 1030)' })
+    }),
+    location: { href: '' }
+  };
+
+  Updates.start(win);
+  assert.equal(versionNodes[0].textContent, 'Версия 1.14');
+  assert.equal(updateButtons[0].hidden, true);
+  await scheduledCheck();
+  assert.equal(updateButtons[0].hidden, false);
+
+  versionNodes = [fakeElement()];
+  updateButtons = [fakeElement()];
+  observerCallback();
+  assert.equal(versionNodes[0].textContent, 'Версия 1.14');
+  assert.equal(updateButtons[0].hidden, false);
+  updateButtons[0].onclick();
+  assert.equal(win.location.href, 'https://github.com/pdkiller666/Orfeus/releases/download/build-1030/orfey-android.apk');
 });

@@ -11,7 +11,7 @@ android {
         minSdk = 29
         targetSdk = 34
         versionCode = project.findProperty("buildVersionCode")?.toString()?.toIntOrNull() ?: 10
-        versionName = "1.14"
+        versionName = "1.15"
     }
     signingConfigs {
         // Постоянный ключ: все сборки подписываются им, поэтому обновления ставятся поверх старой версии.

@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const assets = path.join(__dirname, '../app/src/main/assets');
 const html = fs.readFileSync(path.join(assets, 'index.html'), 'utf8');
+const updates = fs.readFileSync(path.join(assets, 'updates.js'), 'utf8');
 const icons = require(path.join(assets, 'icons.js'));
 
 test('local icon library renders accessible, offline SVG with known icons', () => {
@@ -50,4 +51,15 @@ test('button system has consistent touch targets and keyboard focus', () => {
   assert.match(html, /\.btn:focus-visible,[^}]*outline:3px solid/);
   assert.match(html, /\.sample-player-toggle:focus-visible,[^}]*outline:3px solid/);
   assert.match(html, /\.sample-public-chevron\{display:grid/);
+});
+
+test('installed app version sits below the logo and newer releases reveal a compact button on its right', () => {
+  assert.match(html, /\.brand-header\{display:flex;align-items:center;justify-content:space-between/);
+  assert.match(html, /\.app-version\{display:block[^}]*font-size:10px/);
+  assert.match(html, /const logo=.*<span class="app-version" data-app-version>Версия —<\/span>.*<button type="button" class="btn app-update-btn" data-app-update hidden/u);
+  assert.match(html, /\.app-update-btn\.btn\{[^}]*width:auto[^}]*min-height:36px/);
+  assert.match(updates, /bridge\.appVersionName/);
+  assert.match(updates, /new win\.MutationObserver\(refreshBrand\)/);
+  assert.match(updates, /latestUpdate = shouldRecommend\(latest, installedCode\) \? latest : null/);
+  assert.doesNotMatch(updates, /orfeyUpdateDialog|orfey-update-shade/, 'update notice should not block the exercise screen');
 });
