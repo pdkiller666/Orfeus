@@ -63,3 +63,53 @@ test('installed app version sits below the logo and newer releases reveal a comp
   assert.match(updates, /latestUpdate = shouldRecommend\(latest, installedCode\) \? latest : null/);
   assert.doesNotMatch(updates, /orfeyUpdateDialog|orfey-update-shade/, 'update notice should not block the exercise screen');
 });
+
+
+test('Today screen groups its metrics, retains recommendation logic, and places safety notice before the CTA', () => {
+  assert.match(html, /class="today-summary-grid"/);
+  assert.match(html, /class="today-metric-copy"/);
+  assert.match(html, /id="todayStart" class="btn today-start"/);
+  assert.match(html, /rec=!S\.range\?"range":\["one","dyn","step","vib","tw","game"\]/);
+  assert.match(html, /todayCta=\$\("#todayStart"\);if\(todayCta\)todayCta\.insertAdjacentHTML\("beforebegin"/);
+  assert.match(html, /if\(S\.rem&&S\.last!=today\(\)/, 'reminders remain conditional and visible');
+});
+
+test('Lessons use shared search and sticky filters while preserving list position and truthful XP messaging', () => {
+  assert.match(html, /id="lq" class="training-search" type="search"/);
+  assert.match(html, /class="training-filters lesson-filters" role="group" aria-label="Фильтр уроков по уровню"/);
+  assert.match(html, /function openLesson\(id\)\{lessonListScroll=/);
+  assert.match(html, /if\(S\.seen&&!scr&&tab=="les"\)\{nav\(\);v\.innerHTML=lesH\(\);v\.scrollTop=lessonListScroll;return\}/);
+  assert.match(html, /Урок уже зачтён — повторить для закрепления/);
+  assert.doesNotMatch(html, /Урок пройден — отметить снова/);
+  assert.match(html, /function setLessonFilter\(level\)/);
+  assert.match(html, /function setLessonQuery\(value\)/);
+});
+
+test('Profile compacts statistics and settings into disclosures without removing data/privacy actions', () => {
+  assert.match(html, /function profileH\(\)/);
+  assert.match(html, /<details class="tool-disclosure profile-disclosure"><summary>\$\{uiIcon\("waveform"/);
+  assert.match(html, /<b>Статистика и достижения<\/b>/);
+  assert.match(html, /<b>Настройки<\/b>/);
+  assert.match(html, /<b>Данные и конфиденциальность<\/b>/);
+  assert.match(html, /role="img" aria-label="Средняя точность за семь дней/);
+  assert.match(html, /onclick="openData\('export'\)"/);
+  assert.match(html, /onclick="openData\('import'\)"/);
+  assert.match(html, /setRecordEnabled\(this\.checked\)/);
+  assert.match(html, /schema:2,data:S/);
+  assert.match(html, /profile-data-textarea/);
+  assert.match(html, /class="back-button" onclick="go\('me'\)"/);
+});
+
+test('every statically referenced UI SVG exists in the local icon library', () => {
+  const referenced = [...html.matchAll(/uiIcon\("([^"]+)"/g)].map(match => match[1]);
+  for (const name of referenced) assert.ok(icons.names.includes(name), `unknown UI icon: ${name}`);
+});
+
+
+test('secondary profile controls fit mobile layout and keep accessible touch/focus targets', () => {
+  assert.match(html, /\.profile-booking \.btn\{width:auto/);
+  assert.match(html, /\.back-button\{display:inline-flex[^}]*min-height:44px/);
+  assert.match(html, /\.profile-action-row\{display:flex;width:100%;min-height:58px/);
+  assert.match(html, /\.back-button:focus-visible/);
+  assert.match(html, /\.profile-action-row:focus-visible/);
+});
