@@ -150,6 +150,15 @@ test('range calibration requires robust boundaries and a real downward/upward sw
   assert.match(html, /st\.loStart-st\.loEnd>=2&&st\.hiEnd-st\.hiStart>=2/);
 });
 
+test('musical synthetic references use the shared piano-like voice', () => {
+  assert.match(html, /function pianoNote\(ac,f,t0,d,opts=\{\}\)/);
+  assert.match(html, /function tone\(f,d=\.6\)\{try\{const ac=.*pianoNote\(ac,f,t,d\)/);
+  assert.match(html, /const note=\(f,t0,d,o=\{\}\)=>pianoNote\(ac,f,t0,d/);
+  assert.match(html, /pianoNote\(metroCtx,metroBeat%4===0\?523\.25:392/);
+  assert.match(html, /pianoNote\(ac,fq\(n\),T\+j\*\.6/);
+  assert.doesNotMatch(html, /note\(fq\(m\),T,2\.5,\{type:"sawtooth"/);
+});
+
 test('game gates advance forward as updateGameFrame advances elapsed time', () => {
   assert.match(html, /const x=ballX\+\(gate\.crossAt-game\.elapsed\)\*speed/);
   const start = html.indexOf('function updateGameFrame(r,fr,t){');
