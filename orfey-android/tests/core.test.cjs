@@ -94,3 +94,31 @@ test('lesson exercise key builder disambiguates duplicate titles without collisi
   assert.equal(new Set(keys).size, 3);
   assert.deepEqual(keys, ['унисон', 'унисон-2-2', 'скользящий-слайд']);
 });
+
+
+test('game targets stay inside the comfortable scale range and are deterministic with an injected RNG', () => {
+  const values = [0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1, NaN, -1];
+  const targets = Core.createGameTargets(60, 72, () => values.shift(), 10);
+  assert.deepEqual(targets, [60, 62, 64, 65, 67, 69, 72, 72, 60, 60]);
+  assert.ok(targets.every(note => note >= 60 && note <= 72));
+  assert.deepEqual(Core.createGameTargets(60, 64, () => 1, 3), [64, 64, 64]);
+});
+
+test('game gate accepts only voiced pitches inside the configured cents tolerance', () => {
+  assert.equal(Core.gamePitchInGate(60, 60, 50), true);
+  assert.equal(Core.gamePitchInGate(60.49, 60, 50), true);
+  assert.equal(Core.gamePitchInGate(60.51, 60, 50), false);
+  assert.equal(Core.gamePitchInGate(-1, 60, 50), false);
+  assert.equal(Core.gamePitchInGate(null, 60, 50), false);
+});
+
+test('game score increments hits and combo, resets combo on a missed gate, and preserves best combo', () => {
+  let score = { passed: 0, hits: 0, combo: 0, bestCombo: 0 };
+  score = Core.recordGameGate(score, true);
+  score = Core.recordGameGate(score, true);
+  assert.deepEqual(score, { passed: 2, hits: 2, combo: 2, bestCombo: 2 });
+  score = Core.recordGameGate(score, false);
+  assert.deepEqual(score, { passed: 3, hits: 2, combo: 0, bestCombo: 2 });
+  score = Core.recordGameGate(score, true);
+  assert.deepEqual(score, { passed: 4, hits: 3, combo: 1, bestCombo: 2 });
+});

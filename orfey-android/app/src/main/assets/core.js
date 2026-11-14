@@ -99,6 +99,46 @@
     return current > previous ? Math.round((current - previous) / 2) + 2 : 0;
   }
 
+  const gameScaleSteps = Object.freeze([0, 2, 4, 5, 7, 9, 12]);
+
+  function createGameTargets(lowMidi, highMidi, randomSource = Math.random, count = 10) {
+    const low = clamp(Math.round(finite(lowMidi, 60)), 24, 108);
+    const high = clamp(Math.round(finite(highMidi, low + 12)), low, 120);
+    const steps = gameScaleSteps.filter(step => low + step <= high);
+    const options = steps.length ? steps : [0];
+    const length = clamp(Math.floor(finite(count, 10)), 0, 30);
+    const random = typeof randomSource === "function" ? randomSource : Math.random;
+    return Array.from({ length }, () => {
+      let sample = 0;
+      try { sample = random(); } catch (_) { sample = 0; }
+      const index = Math.min(options.length - 1, Math.floor(clamp(finite(sample, 0), 0, 1) * options.length));
+      return low + options[index];
+    });
+  }
+
+  function gamePitchInGate(pitchMidi, targetMidi, toleranceCents = 50) {
+    if (!Number.isFinite(pitchMidi) || !Number.isFinite(targetMidi)) return false;
+    const tolerance = clamp(finite(toleranceCents, 50), 0, 200);
+    return Math.abs(pitchMidi - targetMidi) * 100 <= tolerance;
+  }
+
+  function recordGameGate(raw, hit) {
+    const previous = isRecord(raw) ? raw : {};
+    const passed = clamp(Math.floor(finite(previous.passed, 0)), 0, 30);
+    const hits = clamp(Math.floor(finite(previous.hits, 0)), 0, passed);
+    const combo = clamp(Math.floor(finite(previous.combo, 0)), 0, passed);
+    const bestCombo = clamp(Math.floor(finite(previous.bestCombo, 0)), combo, 30);
+    const score = { passed: passed + 1, hits, combo, bestCombo };
+    if (hit === true) {
+      score.hits += 1;
+      score.combo += 1;
+      score.bestCombo = Math.max(score.bestCombo, score.combo);
+    } else {
+      score.combo = 0;
+    }
+    return score;
+  }
+
   const lessonIdPattern = /^[a-z][a-z0-9_-]{0,31}$/i;
   const lessonExerciseIdPattern = /^[a-z0-9а-яё-]{1,80}$/iu;
 
@@ -211,6 +251,9 @@
     pitchCue,
     localDateKey,
     computeGain,
+    createGameTargets,
+    gamePitchInGate,
+    recordGameGate,
     lessonExerciseKey,
     lessonExerciseKeys,
     normalizeLessonExerciseProgress,

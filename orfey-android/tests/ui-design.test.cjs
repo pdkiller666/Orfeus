@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const vm = require('node:vm');
 const assets = path.join(__dirname, '../app/src/main/assets');
 const html = fs.readFileSync(path.join(assets, 'index.html'), 'utf8');
 const updates = fs.readFileSync(path.join(assets, 'updates.js'), 'utf8');
@@ -112,4 +113,31 @@ test('secondary profile controls fit mobile layout and keep accessible touch/foc
   assert.match(html, /\.profile-action-row\{display:flex;width:100%;min-height:58px/);
   assert.match(html, /\.back-button:focus-visible/);
   assert.match(html, /\.profile-action-row:focus-visible/);
+});
+
+
+test('Popadi v notu is a voice-controlled moving gate game, not a generic pitch sequence', () => {
+  assert.match(html, /game:\{c:"game",t:"Попади в ноту",sub:"20 сек · 10 ворот"/);
+  assert.match(html, /function createGameState\(exercise\)/);
+  assert.match(html, /function updateGameFrame\(r,fr,t\)/);
+  assert.match(html, /OrfeyCore\.gamePitchInGate\(game\.ballMidi,gate\.midi,50\)/);
+  assert.match(html, /id==="game"\?updateGameFrame\(r,fr,t\)/);
+  assert.match(html, /function drawGame\(\)/);
+  assert.match(html, /aria-label="Игровое поле: высота голоса управляет шариком; проведите его через нотные ворота"/);
+  assert.match(html, /canvas id="c" width="400" height="250"/);
+  assert.match(html, /id="gameTarget"/);
+  assert.match(html, /id="gamePassed"/);
+  assert.match(html, /id="gameCombo"/);
+  assert.match(html, /id="pc" aria-label="Точность попаданий в игровые ворота"/);
+  assert.match(html, /gameHits:r\.id==="game"\?r\.game\.score\.hits:0/);
+  assert.doesNotMatch(html, /game:\{[^}]*seqEx\(rnd\(10\),2\)/);
+});
+
+test('all inline JavaScript blocks in the WebView entry point parse', () => {
+  const blocks = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]
+    .filter(([, attributes]) => !/\bsrc\s*=/.test(attributes));
+  assert.ok(blocks.length > 0, 'expected inline app scripts');
+  blocks.forEach(([, , source], index) => {
+    assert.doesNotThrow(() => new vm.Script(source, { filename: `index.html#inline-${index + 1}` }));
+  });
 });
