@@ -72,4 +72,6 @@ APK публикуется для прямой установки в GitHub Rele
 
 Node-регрессии, sample catalog, YIN и бинарная целостность APK проверены. Реальный Android-микрофон и системное разрешение, TalkBack, голосовая точность и педагогическая пригодность требуют последующей проверки на устройстве; browser preview с синтетическим pitch для этого недостаточен.
 
+**Known issue в 1.17:** шарик реагирует на звук, но ворота оставались неподвижны: `drawGame()` позиционировал их по `game.elapsed`, а игровой цикл не обновлял эту величину. Локальная правка синхронизирует elapsed; новая регрессия исполняет настоящий `updateGameFrame()` и проверяет сдвиг ворот. Кандидат `versionName 1.18` не опубликован и ещё требует проверки на реальном Android-телефоне.
+
 Из корня репозитория: `node --test orfey-android/tests/*.test.cjs`; каталог: `python3 scripts/validate_samples.py`; YIN: `node scripts/test_samples_audio.cjs orfey-android`. Для отдельных inline-скриптов страницы регрессионные тесты компилируют JavaScript без исполнения DOM-кода. GitHub Actions запускается при push в `main` и публикует Release; сначала тестируйте локально, затем дождитесь явного согласования точного diff перед push. CI рассчитывает Android `versionCode` по номеру workflow; в `app/build.gradle.kts` меняется только `versionName`, если выпуск 1.17 согласован.

@@ -148,3 +148,10 @@ APK версии 1.8 опубликован как [GitHub Release build-1021](h
 Commit `12c9250` опубликован в `main`; GitHub Actions run [43572175402](https://github.com/pdkiller666/Orfeus/actions/runs/43572175402) успешно собрал APK и опубликовал [Release Orfeus 1.17 / build-1032](https://github.com/pdkiller666/Orfeus/releases/tag/build-1032). APK: [orfey-android.apk](https://github.com/pdkiller666/Orfeus/releases/download/build-1032/orfey-android.apk). Полная бинарная проверка и SHA-256 приведены в `docs/PROJECT_CONTEXT.md`. Физическая device-проверка остаётся открытой задачей.
 
 Дальнейшие действия: Android-device smoke test; проверить реальную ноту/ворота, подсказки, остановку, ориентации и TalkBack; получить педагогическое согласование диапазона/темпа. Подробный порядок — в [`docs/ROADMAP.md`](docs/ROADMAP.md), долговременный handoff — в [`docs/PROJECT_CONTEXT.md`](docs/PROJECT_CONTEXT.md).
+
+
+## Дополнение после пользовательской проверки 1.17: ворота неподвижны
+
+Владелец сообщил, что опубликованная игра двигает шарик по вертикали от звука, но не продвигает ворота вперёд. В исходнике подтверждена причина: `drawGame()` позиционировал ворота по `game.elapsed`, однако updater обновлял score от `t`, не присваивая время в `game.elapsed`. Локальная правка синхронизирует эти часы; новая динамическая regression запускает реальный `updateGameFrame()` и подтверждает сдвиг координаты ворот при росте elapsed. Node-набор 55/55, каталог 4 образцов, 15 YIN checks; fake-mic Chromium preview измерил движение примерно на 93 px за 0.85 секунды.
+
+`versionName` локально подготовлен как 1.18, но fix **не отправлен и не опубликован**. Предыдущий preview из 1.17 проверял scoring и экран результата, но не проверял продвижение ворот — это был пробел в аудите. Требуются device test на Android с реальным голосом/микрофоном и подтверждение владельца до push/release; см. [`docs/ROADMAP.md`](docs/ROADMAP.md).

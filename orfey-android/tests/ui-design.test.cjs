@@ -133,6 +133,27 @@ test('Popadi v notu is a voice-controlled moving gate game, not a generic pitch 
   assert.doesNotMatch(html, /game:\{[^}]*seqEx\(rnd\(10\),2\)/);
 });
 
+test('game gates advance forward as updateGameFrame advances elapsed time', () => {
+  assert.match(html, /const x=ballX\+\(gate\.crossAt-game\.elapsed\)\*speed/);
+  const start = html.indexOf('function updateGameFrame(r,fr,t){');
+  const end = html.indexOf('\nfunction loop()', start);
+  assert.ok(start >= 0 && end > start, 'expected a standalone game frame updater');
+  const source = html.slice(start, end);
+  const updateGameFrame = new vm.Script(`${source}; updateGameFrame;`).runInNewContext({ nn: midi => String(midi) });
+  const game = {
+    elapsed: 0, lastPitchAt: -1, ballMidi: null, voiced: false,
+    gates: [{ midi: 60, crossAt: 10, result: null }],
+    score: { passed: 0, hits: 0, combo: 0, bestCombo: 0 }, lastEvent: null
+  };
+  const run = { game, good: 0, tot: 0, cb: 0, combo: 0 };
+  updateGameFrame(run, { f: -1 }, 1);
+  const gateXAt1s = 90 + (game.gates[0].crossAt - game.elapsed) * 100;
+  updateGameFrame(run, { f: -1 }, 2);
+  const gateXAt2s = 90 + (game.gates[0].crossAt - game.elapsed) * 100;
+  assert.equal(game.elapsed, 2);
+  assert.ok(gateXAt2s < gateXAt1s, 'the gate should move left toward the ball as time advances');
+});
+
 test('all inline JavaScript blocks in the WebView entry point parse', () => {
   const blocks = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]
     .filter(([, attributes]) => !/\bsrc\s*=/.test(attributes));
