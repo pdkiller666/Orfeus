@@ -69,3 +69,9 @@ Commit `12c9250` (`feat(game): implement promised note-gate game for 1.17`) оп
 Для калибровки использован компактный CC0 sound bank FreePats `UprightPianoKW-small-SFZ-20190703`: запись пианино Kawai upright, опубликованная под Creative Commons CC0. Анализ мягких velocity samples показал атаку примерно 35–60 мс, тёплый ранний спектр около 630–950 Гц и быстрое затухание верхних гармоник. Генератор `pianoNote` подстроен под эти признаки: добавлены мягкая атака 18–45 мс, индивидуальные decay для гармоник, небольшая inharmonic stretch, тихий hammer-noise transient и более тёплый low-pass. Исходные samples в APK и репозиторий не добавлялись; они использовались только как reference.
 
 Источник: https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html. Лицензия и описание записи также сохранены в скачанном источнике FreePats; тесты после настройки: 59/59 Node, sample catalog и 15 YIN checks.
+
+## Hybrid sample-based piano player — 2026-11-15
+
+Музыкальные эталоны переведены на гибридный проигрыватель: в `app/src/main/assets/piano/` добавлены 12 моно WAV-сэмплов мягкого Kawai upright piano из CC0 bank FreePats, обрезанных до 3.5 секунд и ресэмплированных в 22.05 kHz. `pianoSampleNote` выбирает ближайшую ноту, меняет `playbackRate` для целевой высоты и применяет мягкое envelope/low-pass; `pianoSynthNote` остаётся fallback при недоступном или ещё не загруженном sample bank. В APK добавлено около 1.8 MiB аудио и CC0.txt/README.md с происхождением.
+
+Источник: https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html. Локально проверены 12 WAV, license files, 60/60 Node-тестов, sample catalog и 15 YIN checks; публикация этой версии ожидает автоматического deploy по принятому правилу.

@@ -41,3 +41,7 @@
 ## Уточнение piano-like тембра по реальному reference — 2026-11-15
 
 Генератор музыкальных эталонов уточнён по реальной записи мягкого Kawai upright piano из CC0 sound bank FreePats. Скорректированы атака, индивидуальное затухание гармоник, небольшая негармоничность струн, hammer transient и яркость фильтра. Исходный sound bank не включён в приложение; изменение остаётся компактным и offline. Локальные проверки: 59 Node-тестов, sample catalog и 15 YIN regressions прошли.
+
+## Hybrid sample-based piano — 2026-11-15
+
+Вместо только синтезированных гармоник добавлены 12 локальных CC0 samples мягкого upright piano. Проигрыватель выбирает ближайший root sample и применяет pitch-shifting, envelope и фильтрацию; прежний синтез сохранён как fallback. Аудио и лицензионное описание занимают около 1.8 MiB. Все 60 Node-тестов, sample catalog и 15 YIN regressions прошли.

@@ -152,7 +152,7 @@ test('range calibration requires robust boundaries and a real downward/upward sw
 
 test('musical synthetic references use the shared piano-like voice', () => {
   assert.match(html, /function pianoNote\(ac,f,t0,d,opts=\{\}\)/);
-  assert.match(html, /function tone\(f,d=\.6\)\{try\{const ac=.*pianoNote\(ac,f,t,d\)/);
+  assert.match(html, /function tone\(f,d=\.6\)\{try\{if\(!cueCtx\)cueCtx=new\(window\.AudioContext\|\|window\.webkitAudioContext\)\(\);.*pianoNote\(cueCtx,f,t,d\)/);
   assert.match(html, /const note=\(f,t0,d,o=\{\}\)=>pianoNote\(ac,f,t0,d/);
   assert.match(html, /pianoNote\(metroCtx,metroBeat%4===0\?523\.25:392[^;]*click:false/);
   assert.match(html, /pianoNote\(ac,fq\(n\),T\+j\*\.6/);
@@ -160,6 +160,19 @@ test('musical synthetic references use the shared piano-like voice', () => {
   assert.match(html, /\[\[1,\.92\],\[2,\.43\],\[3,\.19\]/);
   assert.match(html, /if\(opts\.click!==false\)/);
   assert.doesNotMatch(html, /note\(fq\(m\),T,2\.5,\{type:"sawtooth"/);
+});
+
+test('hybrid piano voice bundles twelve mapped CC0 samples with a fallback', () => {
+  const pianoDir = path.join(assets, 'piano');
+  const files = fs.readdirSync(pianoDir).filter(name => name.endsWith('.wav'));
+  assert.equal(files.length, 12);
+  assert.ok(fs.existsSync(path.join(pianoDir, 'CC0.txt')));
+  assert.ok(fs.existsSync(path.join(pianoDir, 'README.md')));
+  assert.match(html, /const PIANO_SAMPLES=\[/);
+  assert.match(html, /function warmPianoSamples\(ac\)/);
+  assert.match(html, /function pianoSampleNote\(ac,f,t0,d,opts=\{\}\)/);
+  assert.match(html, /if\(!pianoSampleNote\(ac,f,t0,d,opts\)\)pianoSynthNote/);
+  assert.match(html, /fetch\(new URL\("piano\/"\+spec\.file,document\.baseURI\)\)/);
 });
 
 test('game gates advance forward as updateGameFrame advances elapsed time', () => {
