@@ -130,3 +130,10 @@ APK версии 1.8 опубликован как [GitHub Release build-1021](h
 Проверка: локальные мобильные preview показали навигацию категориями, экран упражнения с teacher sample `one` и кастомный player; прошли 41 Node-тест, каталог из 4 одобренных образцов и 15 YIN pitch regressions. GitHub Actions run [43554959796](https://github.com/pdkiller666/Orfeus/actions/runs/43554959796) успешно собрал и опубликовал [Release build-1029](https://github.com/pdkiller666/Orfeus/releases/tag/build-1029), APK: [orfey-android.apk](https://github.com/pdkiller666/Orfeus/releases/download/build-1029/orfey-android.apk).
 
 Рекомендации №5, №12, №14, №17 и №18 остаются частичными: нужны физические проверки WebView на телефонах, TalkBack/увеличенный шрифт, подтверждение контраста и бренд-гайда, а также педагогическая проверка записей. Текущий опубликованный teacher sample относится к упражнению «Одна нота» (`one`); «Диагностика диапазона» (`range`) использует синтетический образец, пока для него нет approved teacher sample в `main`.
+
+
+## Дополнение после релиза Orfey 1.15: версия приложения и обновление
+
+В 1.15 под текстовым названием логотипа отображается установленная версия из `BuildConfig.VERSION_NAME`; справа появляется компактная кнопка «Обновить», если GitHub Releases содержит более новый валидный APK. Ненавязчивый UI заменяет update-диалог только в новых версиях, работает при повторных рендерах и оставляет текущую версию доступной офлайн. Версия опубликована как [Release build-1030](https://github.com/pdkiller666/Orfeus/releases/tag/build-1030); workflow [43561631422](https://github.com/pdkiller666/Orfeus/actions/runs/43561631422) завершил build/publish успешно; прямой APK: [orfey-android.apk](https://github.com/pdkiller666/Orfeus/releases/download/build-1030/orfey-android.apk).
+
+Это небольшое улучшение UX/обновлений не закрывает рекомендации целиком: пункты №12 (проверка навигации), №14 (доступность), №17 (иконки) и №18 (единая дизайн-система) остаются частичными до проверки на физических Android-устройствах, TalkBack, крупном шрифте, узком экране и при установке новой сборки поверх предыдущей.
