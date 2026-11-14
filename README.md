@@ -16,3 +16,8 @@
 ## Версия 1.10 — опубликована
 
 В запросе публичного manifest удалён вручную добавленный `Cache-Control`: для `raw.githubusercontent.com` он вызывал OPTIONS preflight, на который endpoint отвечает 403; `cache: "no-store"` и уникальный query-параметр сохраняют обновление без такого preflight. На опубликованном main manifest проверена схема 1 и четыре записи, включая teacher sample для упражнения «Одна нота». В уроках добавлен локальный чек-лист по каждому упражнению, общий процент/счётчик и перенос этого состояния через существующий экспорт/импорт. XP продолжает начисляться только по прежней кнопке завершения урока. GitHub Actions run [43471802009](https://github.com/pdkiller666/Orfeus/actions/runs/43471802009) прошёл успешно и опубликовал [Release build-1024](https://github.com/pdkiller666/Orfeus/releases/tag/build-1024), versionCode 1024. Прямая загрузка APK: [orfey-android.apk](https://github.com/pdkiller666/Orfeus/releases/download/build-1024/orfey-android.apk).
+
+
+## Версия 1.11 — опубликована
+
+Когда для упражнения доступна преподавательская запись, приложение оставляет одну основную жёлтую кнопку Play/Stop. Описание записи и дополнительный нативный плеер находятся в закрытой по умолчанию сворачиваемой панели сразу под кнопкой; при сворачивании во время воспроизведения звук останавливается. Проверки: 33 Node-теста, проверка каталога и 15 YIN pitch regressions прошли в CI. GitHub Actions [43543959489](https://github.com/pdkiller666/Orfeus/actions/runs/43543959489) успешно опубликовал [Release build-1025](https://github.com/pdkiller666/Orfeus/releases/tag/build-1025), Android versionCode 1025. [Скачать APK](https://github.com/pdkiller666/Orfeus/releases/download/build-1025/orfey-android.apk).
