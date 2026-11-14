@@ -154,8 +154,11 @@ test('musical synthetic references use the shared piano-like voice', () => {
   assert.match(html, /function pianoNote\(ac,f,t0,d,opts=\{\}\)/);
   assert.match(html, /function tone\(f,d=\.6\)\{try\{const ac=.*pianoNote\(ac,f,t,d\)/);
   assert.match(html, /const note=\(f,t0,d,o=\{\}\)=>pianoNote\(ac,f,t0,d/);
-  assert.match(html, /pianoNote\(metroCtx,metroBeat%4===0\?523\.25:392/);
+  assert.match(html, /pianoNote\(metroCtx,metroBeat%4===0\?523\.25:392[^;]*click:false/);
   assert.match(html, /pianoNote\(ac,fq\(n\),T\+j\*\.6/);
+  assert.match(html, /attack=Math\.min\(\.045,Math\.max\(\.018/);
+  assert.match(html, /\[\[1,\.92\],\[2,\.43\],\[3,\.19\]/);
+  assert.match(html, /if\(opts\.click!==false\)/);
   assert.doesNotMatch(html, /note\(fq\(m\),T,2\.5,\{type:"sawtooth"/);
 });
 
