@@ -112,6 +112,15 @@ test('game gate accepts only voiced pitches inside the configured cents toleranc
   assert.equal(Core.gamePitchInGate(null, 60, 50), false);
 });
 
+test('pitch range summary rejects unstable or implausibly narrow boundaries', () => {
+  const low = Array.from({ length: 30 }, (_, i) => 48 + (i % 5) * 0.2);
+  const high = Array.from({ length: 30 }, (_, i) => 72 - (i % 5) * 0.2);
+  assert.deepEqual(Core.summarizePitchRange(low, high), { low: 48, high: 72, span: 24 });
+  assert.equal(Core.summarizePitchRange([60, 60.1, 60.2, 60.3, 60.4], high, 20), null);
+  assert.equal(Core.summarizePitchRange(Array(30).fill(60), Array(30).fill(64)), null);
+  assert.equal(Core.summarizePitchRange(Array(30).fill(72), Array(30).fill(48)), null);
+});
+
 test('game score increments hits and combo, resets combo on a missed gate, and preserves best combo', () => {
   let score = { passed: 0, hits: 0, combo: 0, bestCombo: 0 };
   score = Core.recordGameGate(score, true);

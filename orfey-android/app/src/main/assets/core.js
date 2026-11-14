@@ -116,6 +116,27 @@
     return Math.abs(pitchMidi - targetMidi) * 100 <= tolerance;
   }
 
+  function summarizePitchRange(lowSamples, highSamples, minSamples = 20) {
+    const clean = value => Array.isArray(value)
+      ? value.filter(Number.isFinite).sort((a, b) => a - b)
+      : [];
+    const low = clean(lowSamples);
+    const high = clean(highSamples);
+    const required = Math.max(5, Math.floor(finite(minSamples, 20)));
+    if (low.length < required || high.length < required) return null;
+    const quantile = (values, fraction) => values[Math.min(values.length - 1,
+      Math.max(0, Math.floor((values.length - 1) * fraction)))];
+    const lowEdge = quantile(low, 0.1);
+    const highEdge = quantile(high, 0.9);
+    const lowCore = quantile(low, 0.2);
+    const highCore = quantile(high, 0.8);
+    const span = highEdge - lowEdge;
+    const stable = lowCore - lowEdge <= 2 && highEdge - highCore <= 2;
+    if (!Number.isFinite(lowEdge) || !Number.isFinite(highEdge)
+      || span < 7 || !stable) return null;
+    return { low: lowEdge, high: highEdge, span };
+  }
+
   function recordGameGate(raw, hit) {
     const previous = isRecord(raw) ? raw : {};
     const passed = clamp(Math.floor(finite(previous.passed, 0)), 0, 30);
@@ -247,6 +268,7 @@
     computeGain,
     createGameTargets,
     gamePitchInGate,
+    summarizePitchRange,
     recordGameGate,
     lessonExerciseKey,
     lessonExerciseKeys,

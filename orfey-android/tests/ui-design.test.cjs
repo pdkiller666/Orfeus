@@ -133,6 +133,23 @@ test('Popadi v notu is a voice-controlled moving gate game, not a generic pitch 
   assert.doesNotMatch(html, /game:\{[^}]*seqEx\(rnd\(10\),2\)/);
 });
 
+test('melisma plays a reference tone at every target and minute exercises last a minute', () => {
+  assert.match(html, /if\(st\.i!==i\)\{st\.i=i;tone\(fq\(m\)\);st\.mute=t\+\.75\}/);
+  assert.match(html, /one:\{[^}]*mk:\(\)=>seqEx\(\[0,4,7,12\],15\)/);
+  assert.match(html, /step:\{[^}]*mk:\(\)=>seqEx\(\[0,2,0,0,-1,0,4,2,0\],60\/9\)/);
+  assert.match(html, /fal:\{[^}]*mk:\(\)=>seqEx\(\[7,9,12,14,12,9\],10\)/);
+  assert.match(html, /dyn:\{[^}]*d:20\},\{n:"Средне"[^}]*d:20\},\{n:"Громко"[^}]*d:20\}/);
+  assert.match(html, /pop:\{[^}]*mk:\(\)=>\(\{dur:30,/);
+  assert.match(html, /mel:\{[^}]*mk:\(\)=>seqEx\(\[0,2,4,2,0,0,2,4,5,4,2,0\],5\)/);
+});
+
+test('range calibration requires robust boundaries and a real downward/upward sweep', () => {
+  assert.match(html, /dur:120,f\(fr,t,st\)/);
+  assert.match(html, /const up=t>=60/);
+  assert.match(html, /OrfeyCore\.summarizePitchRange\(st\.lo,st\.hi,20\)/);
+  assert.match(html, /st\.loStart-st\.loEnd>=2&&st\.hiEnd-st\.hiStart>=2/);
+});
+
 test('game gates advance forward as updateGameFrame advances elapsed time', () => {
   assert.match(html, /const x=ballX\+\(gate\.crossAt-game\.elapsed\)\*speed/);
   const start = html.indexOf('function updateGameFrame(r,fr,t){');
