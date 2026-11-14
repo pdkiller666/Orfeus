@@ -13,13 +13,14 @@
   let sampleAudioUrl = null;
   let teacherAudio = null;
   let teacherButton = null;
+  let publicAudio = null;
   let catalogRequestId = 0;
   let timer = null;
   const $ = (sel, parent = document) => parent.querySelector(sel);
   const esc = value => String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
   function setTeacherButton(button, playing) {
-    const icon = root.OrfeyIcons ? root.OrfeyIcons.icon(playing ? "stop" : "music", "ui-icon", 18) : "";
-    button.innerHTML = `${icon}<span>${playing ? "Стоп образца" : "Образец"}</span>`;
+    const icon = root.OrfeyIcons ? root.OrfeyIcons.icon(playing ? "stop" : "play", "ui-icon", 18) : "";
+    button.innerHTML = `${icon}<span>${playing ? "Стоп" : "Образец"}</span>`;
     button.setAttribute("aria-label", playing ? "Остановить образец преподавателя" : "Прослушать образец преподавателя");
     button.setAttribute("aria-pressed", String(playing));
   }
@@ -80,6 +81,107 @@
     audio.addEventListener("ended", () => { if (teacherAudio === audio) stopTeacherSample(); });
   }
 
+  function formatAudioTime(value) {
+    const seconds = Number(value);
+    if (!Number.isFinite(seconds) || seconds < 0) return "--:--";
+    return `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
+  }
+
+  function buildPublicAudioPlayer(audio, sample) {
+    const teacher = sample.sourceType === "teacher";
+    const source = teacher ? "образец преподавателя" : "синтетический ориентир";
+    const player = document.createElement("div");
+    player.className = "sample-player";
+    player.setAttribute("role", "group");
+    player.setAttribute("aria-label", `Плеер: ${teacher ? "образец преподавателя" : "синтетический ориентир"}`);
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "sample-player-toggle";
+    const main = document.createElement("div");
+    main.className = "sample-player-main";
+    const top = document.createElement("div");
+    top.className = "sample-player-top";
+    const label = document.createElement("span");
+    label.className = "sample-player-label";
+    label.textContent = teacher ? "Запись преподавателя" : "Тестовый ориентир";
+    const time = document.createElement("span");
+    time.className = "sample-player-time";
+    time.textContent = "0:00 / --:--";
+    top.append(label, time);
+    const seek = document.createElement("input");
+    seek.type = "range";
+    seek.className = "sample-player-seek";
+    seek.min = "0"; seek.max = "1000"; seek.step = "1"; seek.value = "0"; seek.disabled = true;
+    seek.setAttribute("aria-label", `Позиция воспроизведения: ${sample.title || source}`);
+    const status = document.createElement("span");
+    status.className = "sample-player-status";
+    status.setAttribute("role", "status");
+    status.textContent = "Готов к прослушиванию";
+    main.append(top, seek, status);
+    audio.controls = false;
+    audio.preload = "metadata";
+    audio.hidden = true;
+    audio.tabIndex = -1;
+    audio.setAttribute("aria-hidden", "true");
+
+    const setPlaying = playing => {
+      toggle.innerHTML = root.OrfeyIcons ? root.OrfeyIcons.icon(playing ? "pause" : "play", "ui-icon", 20) : "";
+      toggle.setAttribute("aria-label", playing ? `Приостановить ${source}` : `Воспроизвести ${source}`);
+      player.classList.toggle("is-playing", playing);
+    };
+    const updatePosition = () => {
+      const duration = Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : 0;
+      const current = Number.isFinite(audio.currentTime) && audio.currentTime >= 0 ? audio.currentTime : 0;
+      time.textContent = `${formatAudioTime(current)} / ${duration ? formatAudioTime(duration) : "--:--"}`;
+      seek.disabled = !duration;
+      seek.value = String(duration ? Math.round(Math.min(1, current / duration) * 1000) : 0);
+      seek.setAttribute("aria-valuetext", `${formatAudioTime(current)} из ${duration ? formatAudioTime(duration) : "неизвестной длительности"}`);
+    };
+    toggle.addEventListener("click", () => {
+      if (audio.paused) {
+        status.textContent = "Запускаю воспроизведение…";
+        const attempt = audio.play();
+        if (attempt && typeof attempt.catch === "function") attempt.catch(() => {
+          status.textContent = "Не удалось воспроизвести запись. Проверьте подключение и повторите.";
+          setPlaying(false);
+        });
+      } else audio.pause();
+    });
+    seek.addEventListener("input", () => {
+      if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+      audio.currentTime = Number(seek.value) / 1000 * audio.duration;
+      updatePosition();
+    });
+    audio.addEventListener("loadedmetadata", updatePosition);
+    audio.addEventListener("durationchange", updatePosition);
+    audio.addEventListener("timeupdate", updatePosition);
+    audio.addEventListener("play", () => {
+      setPlaying(true);
+      status.dataset.state = "playing";
+      status.textContent = "Воспроизведение";
+    });
+    audio.addEventListener("pause", () => {
+      setPlaying(false);
+      status.dataset.state = "";
+      status.textContent = audio.ended ? "Прослушивание завершено" : audio.currentTime > 0 ? "Пауза" : "Готов к прослушиванию";
+    });
+    audio.addEventListener("ended", () => {
+      setPlaying(false);
+      status.dataset.state = "";
+      status.textContent = "Прослушивание завершено";
+      updatePosition();
+    });
+    audio.addEventListener("error", () => {
+      setPlaying(false);
+      seek.disabled = true;
+      status.textContent = "Не удалось загрузить аудиозапись. Обновите каталог и попробуйте снова.";
+    });
+    setPlaying(false);
+    updatePosition();
+    player.append(toggle, main, audio);
+    return player;
+  }
+
   function openModal(exerciseId, html) {
     closeModal(false);
     modal = document.createElement("section");
@@ -137,7 +239,7 @@
       <p class="mu">Можно записать звук с микрофона или выбрать готовый аудиофайл. Затем выберите фрагмент до 30 секунд, прослушайте его и при необходимости замените или обрежьте. Поддерживаются распространённые аудиоформаты; исходный файл — до 25 МБ и 2 минут.</p>
       <div class="sample-warning"><b>Важно: отправка делает аудио публичным немедленно.</b> Репозиторий открыт, поэтому WAV станет доступен любому пользователю GitHub сразу после отправки в ветку — ещё до проверки или слияния Pull Request. Удаление файла не гарантирует удаления скопированных копий. Отправляйте только запись, которую вы готовы опубликовать открыто.</div>
       ${["belt","belt2","tw","tw2","grit"].includes(exerciseId) ? `<div class="sample-warning"><b>Нужна педагогическая проверка.</b> Pull Request нужен для включения образца в каталог приложения; он не скрывает уже отправленный публичный файл. Не используйте запись как инструкцию форсировать голос.</div>` : ""}
-      <div class="sample-rec-controls"><button id="sampleRecord" class="btn" type="button">${root.OrfeyIcons.icon("mic","ui-icon",18)}<span>Начать запись</span></button><button id="sampleStop" class="btn s" type="button" disabled>${root.OrfeyIcons.icon("stop","ui-icon",18)}<span>Остановить</span></button></div>
+      <div class="sample-rec-controls"><button id="sampleRecord" class="btn sample-record-start" type="button" aria-pressed="false">${root.OrfeyIcons.icon("record","ui-icon",18)}<span>Начать запись</span></button><button id="sampleStop" class="btn s sample-record-stop" type="button" disabled>${root.OrfeyIcons.icon("stop","ui-icon",18)}<span>Остановить</span></button></div>
       <button id="sampleChooseFile" class="btn s" type="button">Выбрать готовый аудиофайл</button><input id="sampleFile" type="file" accept="audio/*,.wav,.mp3,.m4a,.aac,.ogg,.oga,.opus,.webm,.flac" hidden>
       <p id="sampleRecordStatus" class="mu sm" role="status">Запишите звук или выберите файл. Отправится только подтверждённый и обрезанный фрагмент в WAV.</p>
       <audio id="sampleAudio" controls preload="none" hidden></audio>
@@ -383,6 +485,7 @@
   root.loadExerciseSample = async exerciseId => {
     const mount=$("#publishedSample"); if(!mount||!ids.has(exerciseId))return;
     stopTeacherSample();
+    if(publicAudio){publicAudio.pause();publicAudio=null;}
     const requestId=++catalogRequestId;
     if(sampleAudioUrl){URL.revokeObjectURL(sampleAudioUrl);sampleAudioUrl=null;}
     mount.replaceChildren();
@@ -405,26 +508,37 @@
     }
     const synthetic=sample.sourceType==="synthetic";
     const card=document.createElement("details");card.className="sample-public card";
-    const summary=document.createElement("summary");summary.className="sample-public-summary";summary.textContent=synthetic?"Информация о синтетическом ориентире":"Информация и плеер записи";card.appendChild(summary);
+    const summary=document.createElement("summary");summary.className="sample-public-summary";
+    const summaryIcon=document.createElement("span");summaryIcon.className="icon-badge";summaryIcon.innerHTML=root.OrfeyIcons?root.OrfeyIcons.icon(synthetic?"music":"waveform","ui-icon",18):"";
+    const summaryCopy=document.createElement("span");summaryCopy.className="sample-public-summary-copy";
+    const summaryKind=document.createElement("strong");summaryKind.textContent=synthetic?"Синтетический ориентир":"Запись преподавателя";
+    const summaryTitle=document.createElement("small");summaryTitle.textContent=sample.title;
+    summaryCopy.append(summaryKind,summaryTitle);
+    const summaryChevron=document.createElement("span");summaryChevron.className="sample-public-chevron";summaryChevron.innerHTML=root.OrfeyIcons?root.OrfeyIcons.icon("chevron","ui-icon",16):"";
+    summary.append(summaryIcon,summaryCopy,summaryChevron);card.appendChild(summary);
     const content=document.createElement("div");content.className="sample-public-content";card.appendChild(content);
-    const heading=document.createElement("b");heading.textContent=synthetic?"Синтетический тестовый ориентир":"Образец преподавателя";content.appendChild(heading);
     if(synthetic){const notice=document.createElement("p");notice.className="mu sm";notice.textContent="Синтетический сигнал — не голос и не педагогический эталон. Образцы преподавателей из открытых PR не меняют кнопку до слияния в main.";content.appendChild(notice);}
-    const title=document.createElement("p");title.textContent=sample.title;content.appendChild(title);
-    if(sample.description){const description=document.createElement("p");description.className="mu sm";description.textContent=sample.description;content.appendChild(description);}
-    const meta=document.createElement("p");meta.className="mu sm";meta.textContent=`${sample.recordedBy||"Преподаватель"} · лицензия ${sample.license}`;content.appendChild(meta);
+    const normalizeCopy=value=>String(value||"").trim().replace(/\s+/g," ").toLowerCase();
+    const titleKey=normalizeCopy(sample.title),descriptionText=String(sample.description||"").trim(),descriptionKey=normalizeCopy(descriptionText);
+    if(descriptionText&&descriptionKey!==titleKey){const description=document.createElement("p");description.className="sample-public-description";description.textContent=descriptionText;content.appendChild(description);}
+    const recordedBy=String(sample.recordedBy||"Преподаватель").trim(),recordedByKey=normalizeCopy(recordedBy),attribution=[];
+    if(recordedBy&&recordedByKey!==titleKey&&recordedByKey!==descriptionKey)attribution.push(recordedBy);
+    if(sample.license)attribution.push(`Лицензия ${sample.license}`);
+    if(attribution.length){const meta=document.createElement("p");meta.className="sample-public-meta";meta.textContent=attribution.join(" · ");content.appendChild(meta);}
     const status=document.createElement("p");status.className="mu sm";status.textContent="Загружаю и проверяю образец…";content.appendChild(status);mount.appendChild(card);
     try {
       const blob=await getCachedAudio(sample.sha256)||await downloadAndVerify(sample);
       if(requestId!==catalogRequestId||!mount.isConnected)return;
       await cacheAudio(sample.sha256,blob);
-      const audio=document.createElement("audio");audio.controls=true;audio.preload="none";sampleAudioUrl=URL.createObjectURL(blob);audio.src=sampleAudioUrl;content.insertBefore(audio,status);status.remove();
+      const audio=document.createElement("audio");sampleAudioUrl=URL.createObjectURL(blob);audio.src=sampleAudioUrl;publicAudio=audio;
+      const player=buildPublicAudioPlayer(audio,sample);content.insertBefore(player,status);status.remove();
       if(sample.sourceType==="teacher"){
         const demoButton=document.querySelector(`[data-exercise-demo="${exerciseId}"]`);
         if(demoButton)bindTeacherSample(demoButton,audio);
       }
-      card.addEventListener("toggle",()=>{if(!card.open&&teacherAudio===audio)stopTeacherSample();});
+      card.addEventListener("toggle",()=>{if(!card.open){if(teacherAudio===audio)stopTeacherSample();else audio.pause();}});
       addCatalogRefresh(mount,exerciseId);
-    } catch (_) { status.textContent="Не удалось загрузить образец. Проверьте интернет и нажмите «Обновить каталог».";summary.textContent="Не удалось загрузить запись — подробности";addCatalogRefresh(mount,exerciseId); }
+    } catch (_) { status.textContent="Не удалось загрузить образец. Проверьте интернет и нажмите «Обновить каталог».";summaryKind.textContent="Не удалось загрузить запись";summaryTitle.textContent="Проверьте подключение и обновите каталог";addCatalogRefresh(mount,exerciseId); }
   };
   function addCatalogRefresh(mount,exerciseId){
     const button=document.createElement("button");button.type="button";button.className="sample-link";button.textContent="Обновить каталог";button.addEventListener("click",()=>root.loadExerciseSample(exerciseId));mount.appendChild(button);
@@ -432,6 +546,7 @@
   root.refreshExerciseSample = id => root.loadExerciseSample(id);
   root.orfeySamplesPause = () => {
     stopTeacherSample();
+    if(publicAudio){publicAudio.pause();try{publicAudio.currentTime=0;}catch(_){}publicAudio=null;}
     if (!session) return;
     if (session.pendingMicRequest) session.pendingMicRequest.cancelled = true;
     if (session.recorder) stopRecording();
@@ -456,5 +571,5 @@
     catch (_) { /* Offline cache is a best-effort enhancement. */ }
   }
 
-  if (typeof module === "object" && module.exports) module.exports={validEntry,validManifest,rootPath,preferredSample,isSupportedAudioFile};
+  if (typeof module === "object" && module.exports) module.exports={validEntry,validManifest,rootPath,preferredSample,isSupportedAudioFile,formatAudioTime};
 })(typeof window !== "undefined" ? window : globalThis);

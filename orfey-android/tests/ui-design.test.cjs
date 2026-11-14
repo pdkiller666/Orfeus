@@ -7,7 +7,7 @@ const html = fs.readFileSync(path.join(assets, 'index.html'), 'utf8');
 const icons = require(path.join(assets, 'icons.js'));
 
 test('local icon library renders accessible, offline SVG with known icons', () => {
-  for (const name of ['home', 'music', 'book', 'user', 'mic', 'sparkle', 'game', 'search', 'lock', 'play', 'stop', 'metronome']) {
+  for (const name of ['home', 'music', 'book', 'user', 'mic', 'sparkle', 'game', 'search', 'lock', 'play', 'pause', 'stop', 'record', 'metronome']) {
     assert.ok(icons.names.includes(name), `missing icon: ${name}`);
     const svg = icons.icon(name, 'test-icon', 20);
     assert.match(svg, /^<svg /);
@@ -48,4 +48,6 @@ test('button system has consistent touch targets and keyboard focus', () => {
   assert.match(html, /\.btn\{min-height:52px/);
   assert.match(html, /\.training-category\{display:flex;min-height:104px/);
   assert.match(html, /\.btn:focus-visible,[^}]*outline:3px solid/);
+  assert.match(html, /\.sample-player-toggle:focus-visible,[^}]*outline:3px solid/);
+  assert.match(html, /\.sample-public-chevron\{display:grid/);
 });

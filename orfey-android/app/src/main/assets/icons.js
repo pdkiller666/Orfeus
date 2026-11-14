@@ -12,6 +12,8 @@
     search: '<circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/>',
     chevron: '<path d="m9 18 6-6-6-6"/>',
     back: '<path d="m15 18-6-6 6-6"/>',
+    pause: '<path d="M8 5v14M16 5v14"/>',
+    record: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>',
     lock: '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3m-4 5v2"/>',
     check: '<path d="m5 12 4 4L19 6"/>',
     play: '<path d="m7 4 13 8-13 8z"/>',

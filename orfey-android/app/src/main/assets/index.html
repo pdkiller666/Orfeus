@@ -82,6 +82,36 @@ main{padding:18px 18px 20px;scrollbar-width:thin;scrollbar-color:var(--ui-line) 
 @media(min-width:640px){#app{max-width:640px}.training-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.training-list{grid-template-columns:repeat(2,minmax(0,1fr))}.training-item{min-height:86px}}
 @media(prefers-reduced-motion:reduce){.btn,.pill,#nav button{transition:none!important}}
 @media(prefers-reduced-motion:reduce){.sample-modal *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+.exercise-primary-actions .btn-sample{background:var(--gold-soft);color:var(--gold);border:1px solid color-mix(in srgb,var(--gold) 32%,transparent);box-shadow:none}
+.exercise-primary-actions .btn-sample:hover{background:color-mix(in srgb,var(--gold) 18%,var(--card))}
+.exercise-primary-actions .btn-sample[aria-pressed="true"]{background:linear-gradient(135deg,var(--gold2),#dfb347);border-color:transparent;color:#2b1d03;box-shadow:0 4px 12px rgba(201,150,43,.22)}
+.exercise-primary-actions .btn-start{background:linear-gradient(135deg,var(--gold2),#dfb347);box-shadow:0 4px 12px rgba(201,150,43,.22)}
+.sample-public>summary{display:flex;align-items:center;gap:10px;min-height:52px;padding:7px 4px;line-height:1.2;list-style:none}
+.sample-public>summary::-webkit-details-marker{display:none}
+.sample-public-summary-copy{display:flex;min-width:0;flex:1;flex-direction:column;gap:3px}
+.sample-public-summary-copy strong{font-size:13px;line-height:1.25}
+.sample-public-summary-copy small{overflow:hidden;color:var(--mu);font-size:12px;line-height:1.25;text-overflow:ellipsis;white-space:nowrap}
+.sample-public-chevron{display:grid;place-items:center;width:32px;height:32px;flex:none;border-radius:10px;background:var(--card);color:var(--mu);transition:transform .16s ease}
+.sample-public[open] .sample-public-chevron{transform:rotate(90deg)}
+.sample-public-description{margin:2px 0 8px;color:var(--mu);font-size:13px;line-height:1.45}
+.sample-public-meta{margin:0 0 8px;color:var(--mu);font-size:11px;line-height:1.4}
+.sample-player{display:flex;align-items:center;gap:12px;margin:12px 0;padding:12px;border:1px solid var(--ui-line);border-radius:18px;background:var(--card);box-shadow:var(--ui-elev)}
+.sample-player-toggle{display:grid;place-items:center;width:50px;height:50px;flex:none;border:0;border-radius:16px;background:linear-gradient(135deg,var(--gold2),#dfb347);color:#2b1d03;cursor:pointer;transition:transform .14s ease,filter .14s ease}
+.sample-player-toggle:active{transform:scale(.96);filter:brightness(.97)}
+.sample-player-toggle:focus-visible,.sample-player-seek:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.sample-player-main{min-width:0;flex:1}
+.sample-player-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sample-player-label{overflow:hidden;font-size:13px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}
+.sample-player-time{flex:none;color:var(--mu);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sample-player-seek{display:block;width:100%;height:22px;margin:4px 0 0;padding:0;accent-color:var(--gold);cursor:pointer}
+.sample-player-status{display:block;min-height:16px;color:var(--mu);font-size:11px;line-height:1.35}
+.sample-player-status[data-state="playing"]{color:var(--gold);font-weight:650}
+.sample-rec-controls .sample-record-start{border:1px solid color-mix(in srgb,var(--gold) 32%,transparent);background:var(--gold-soft);color:var(--gold);box-shadow:none}
+.sample-rec-controls .sample-record-stop:not(:disabled){border:1px solid rgba(174,60,53,.25);background:rgba(174,60,53,.10);color:#ae3c35;box-shadow:none}
+.sample-rec-controls .sample-record-stop:disabled{opacity:.58}
+@media(max-width:360px){.exercise-primary-actions{gap:8px}.exercise-primary-actions .btn{min-height:60px;padding:9px 8px;font-size:14px}.sample-player{gap:9px;padding:10px}.sample-player-toggle{width:46px;height:46px}}
+@media(prefers-reduced-motion:reduce){.sample-public-chevron,.sample-player-toggle{transition:none!important}}
 </style></head>
 <body><div id="app"><main id="v"></main><nav id="nav"></nav></div>
 <script src="permissions.js"></script><script src="icons.js"></script><script src="core.js"></script><script src="samples.js"></script><script src="updates.js"></script><script>
@@ -185,7 +215,7 @@ const ONB=[["Тренажёр, который дополняет занятия 
 let ob=0;
 function R(){nav();const v=$("#v");v.scrollTop=0;
  if(!S.seen){const o=ONB[ob];v.innerHTML=(ob==0?'<div style="background:#fff;border-radius:28px;padding:8px"><img src="'+FULL+'" style="width:100%;display:block" alt="Орфей — вокальная студия"></div>':logo)+`<div class="card" style="margin-top:20px"><h1>${o[0]}</h1><p class="mu">${o[1]}</p></div><button class="btn" onclick="ob++;if(ob>2){S.seen=1;save();tab='today';scr={t:'pre',id:'range'}}R()">${ob<2?"Далее":"Начать с диагностики"}</button>`;$("#nav").innerHTML="";return}
- if(scr&&scr.t=="pre"){const e=EX[scr.id];v.innerHTML=`<button class="back" onclick="go('train')">‹ Назад</button><h1>${e.t}</h1><div class="card"><b>Как это работает</b><p class="mu">${e.th}</p>${e.warn?`<div class="warn">${SAFE}</div>`:""}</div><p class="mu sm">Совет: наденьте наушники — тогда микрофон не услышит эталонную ноту. Лучший результат: ${S.best[scr.id]||0}%. Процент — ориентир по сигналу, а не оценка качества или безопасности голоса.</p><label class="card row" style="gap:12px"><input type="checkbox" ${S.record?"checked":""} onchange="setRecordEnabled(this.checked)" aria-label="Разрешить запись для сравнения до и после"><span>Опционально записывать звук для «до/после». Запись остаётся в памяти приложения до закрытия или удаления.</span></label><div class="exercise-primary-actions" role="group" aria-label="Основные действия упражнения"><button class="btn" data-exercise-demo="${scr.id}" onclick="demo(this,'${scr.id}')" aria-pressed="false">${uiIcon("music",20)}<span>Эталон</span></button><button class="btn" onclick="begin('${scr.id}')">${uiIcon("mic",20)}<span>Старт</span></button></div><section class="sample-tools card" aria-label="Образец и аудиозаписи"><div class="sample-tools-head"><b>Образец и аудиозаписи</b><button type="button" class="sample-upload-link" aria-label="Загрузить или записать аудиообразец" onclick="openSampleUploader('${scr.id}')">${uiIcon("plus",16)}<span>Добавить</span></button></div><div id="publishedSample"></div></section>`;loadExerciseSample(scr.id);return}
+ if(scr&&scr.t=="pre"){const e=EX[scr.id];v.innerHTML=`<button class="back" onclick="go('train')">‹ Назад</button><h1>${e.t}</h1><div class="card"><b>Как это работает</b><p class="mu">${e.th}</p>${e.warn?`<div class="warn">${SAFE}</div>`:""}</div><p class="mu sm">Совет: наденьте наушники — тогда микрофон не услышит эталонную ноту. Лучший результат: ${S.best[scr.id]||0}%. Процент — ориентир по сигналу, а не оценка качества или безопасности голоса.</p><label class="card row" style="gap:12px"><input type="checkbox" ${S.record?"checked":""} onchange="setRecordEnabled(this.checked)" aria-label="Разрешить запись для сравнения до и после"><span>Опционально записывать звук для «до/после». Запись остаётся в памяти приложения до закрытия или удаления.</span></label><div class="exercise-primary-actions" role="group" aria-label="Основные действия упражнения"><button class="btn btn-sample" data-exercise-demo="${scr.id}" onclick="demo(this,'${scr.id}')" aria-pressed="false">${uiIcon("music",20)}<span>Эталон</span></button><button class="btn btn-start" onclick="begin('${scr.id}')">${uiIcon("mic",20)}<span>Старт</span></button></div><section class="sample-tools card" aria-label="Образец и аудиозаписи"><div class="sample-tools-head"><b>Образец и аудиозаписи</b><button type="button" class="sample-upload-link" aria-label="Загрузить или записать аудиообразец" onclick="openSampleUploader('${scr.id}')">${uiIcon("plus",16)}<span>Добавить</span></button></div><div id="publishedSample"></div></section>`;loadExerciseSample(scr.id);return}
  if(scr&&scr.t=="run"){v.innerHTML=`<h1>${EX[scr.id].t}</h1><div class="bar" style="margin:8px 0 14px"><div id="tm" role="progressbar" aria-label="Ход упражнения" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="width:0"></div></div><canvas id="c" width="800" height="500" role="img" aria-label="График отклонения голоса от целевой зоны"></canvas><div id="srSummary" class="sr-only" aria-live="polite" aria-atomic="true"></div><div class="row" style="margin:14px 0"><div class="big" id="pc" aria-label="Текущий ориентир по сигналу">0%</div><div id="fb" class="mu" style="flex:1" aria-live="off"></div></div><button class="btn s" onclick="finish(0)">Остановить</button>`;return}
  if(scr&&scr.t=="res"){const s=scr.sc,e=EX[scr.id],rc=REC[scr.id];v.innerHTML=`<h1>${s>=90?"Превосходно":s>=70?"Отличная работа":s>=40?"Хорошая попытка":"Давайте ещё раз"}</h1>
  <div class="card"><div class="big">${s}%</div><div class="mu">+${scr.gain} очков</div><p>${s>=70?"Ориентир достигнут по сигналу. Это не оценка качества или безопасности голоса.":"Практика завершена; результат — только ориентир по сигналу."}</p></div>
