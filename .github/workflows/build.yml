@@ -42,9 +42,9 @@ jobs:
         working-directory: orfey-android
         run: |
           set -euo pipefail
-          version_name=$(sed -n 's/.*versionName = "\([^"]*\)".*/\1/p' app/build.gradle.kts | head -n 1)
-          test -n "$version_name"
           version_code=$((1000 + GITHUB_RUN_NUMBER))
+          version_name="1.$((version_code - 1020))"
+          test -n "$version_name"
           echo "name=$version_name" >> "$GITHUB_OUTPUT"
           echo "code=$version_code" >> "$GITHUB_OUTPUT"
       - name: Assemble debug APK

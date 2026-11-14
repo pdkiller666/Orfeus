@@ -75,3 +75,9 @@ Commit `12c9250` (`feat(game): implement promised note-gate game for 1.17`) оп
 Музыкальные эталоны переведены на гибридный проигрыватель: в `app/src/main/assets/piano/` добавлены 12 моно WAV-сэмплов мягкого Kawai upright piano из CC0 bank FreePats, обрезанных до 3.5 секунд и ресэмплированных в 22.05 kHz. `pianoSampleNote` выбирает ближайшую ноту, меняет `playbackRate` для целевой высоты и применяет мягкое envelope/low-pass; `pianoSynthNote` остаётся fallback при недоступном или ещё не загруженном sample bank. В APK добавлено около 1.8 MiB аудио и CC0.txt/README.md с происхождением.
 
 Источник: https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html. Локально проверены 12 WAV, license files, 60/60 Node-тестов, sample catalog и 15 YIN checks; публикация этой версии ожидает автоматического deploy по принятому правилу.
+
+## Автоматическая версия приложения — 2026-11-15
+
+Исправлена логика версий: `app/build.gradle.kts` теперь вычисляет `versionName` из переданного CI `versionCode`, а workflow вычисляет то же значение для заголовка Release. База совместимости: `versionCode 1038` соответствует `1.18`, `1039` — `1.19`, `1040` — `1.20`; `versionCode` по-прежнему равен `1000 + GITHUB_RUN_NUMBER`. Поэтому Android получает возрастающие `versionCode`, а пользовательская версия больше не остаётся навсегда на `1.18`.
+
+Локальный Gradle wrapper в репозитории отсутствует, поэтому Gradle assemble проверяется GitHub Actions. Локально прошли 60/60 Node-тестов, sample catalog, 15 YIN checks и `git diff --check`.

@@ -10,8 +10,10 @@ android {
         applicationId = "ru.orfey.voice"
         minSdk = 29
         targetSdk = 34
-        versionCode = project.findProperty("buildVersionCode")?.toString()?.toIntOrNull() ?: 10
-        versionName = "1.18"
+        val resolvedVersionCode = project.findProperty("buildVersionCode")?.toString()?.toIntOrNull() ?: 10
+        versionCode = resolvedVersionCode
+        // Keep 1.18 at code 1038; later build codes advance the minor version automatically.
+        versionName = "1.${(resolvedVersionCode - 1020).coerceAtLeast(0)}"
     }
     signingConfigs {
         // Постоянный ключ: все сборки подписываются им, поэтому обновления ставятся поверх старой версии.
