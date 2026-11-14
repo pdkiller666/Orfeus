@@ -45,3 +45,8 @@ Release 1.10 опубликован как [build-1024](https://github.com/pdkil
 ## Проверенный релиз 1.11
 
 Для опубликованной teacher-записи сохранена одна основная кнопка Play/Stop. Дополнительный `<audio controls>` вместе с названием, описанием и данными автора перемещён в нативный `<details>` под кнопкой, закрытый по умолчанию. Сворачивание панели во время воспроизведения останавливает запись. Проверено 33 Node-теста, синтаксис JS и inline script, каталог образцов (4 записи) и 15 проверок YIN. GitHub Actions [43543959489](https://github.com/pdkiller666/Orfeus/actions/runs/43543959489) завершился успешно. [Release `build-1025`](https://github.com/pdkiller666/Orfeus/releases/tag/build-1025), APK: [orfey-android.apk](https://github.com/pdkiller666/Orfeus/releases/download/build-1025/orfey-android.apk), versionCode 1025.
+
+
+## Проверенный релиз 1.12
+
+Экран упражнения получил компактную группу из кнопок «Образец» и «Старт». Карточка материалов отдельно содержит раскрываемые сведения/плеер и вторичную кнопку добавления записи. Форма записи и загрузки представлена как прокручиваемая нижняя панель поверх текущего упражнения; закрытие по кнопке, Escape или нажатию вне панели очищает запись/микрофон, восстанавливает прокрутку и не вызывает перерисовку экрана упражнения. GitHub Actions [43547702446](https://github.com/pdkiller666/Orfeus/actions/runs/43547702446) завершился успешно; 34 Node-теста, каталог и YIN-регрессии прошли. [Release build-1026](https://github.com/pdkiller666/Orfeus/releases/tag/build-1026), APK [orfey-android.apk](https://github.com/pdkiller666/Orfeus/releases/download/build-1026/orfey-android.apk), versionCode 1026.
