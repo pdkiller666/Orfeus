@@ -62,3 +62,5 @@ GitHub Actions [43550719700](https://github.com/pdkiller666/Orfeus/actions/runs/
 ## Переход на прямую структуру исходников
 
 Android project теперь полностью хранится в репозитории в [`orfey-android/`](../orfey-android/), а не в `orfey-android.zip`. Корневой workflow проверяет и собирает исходники непосредственно в этой папке; шаг распаковки удалён. Существующий keystore перенесён без изменения, asset APK и механизм публикации Releases сохранены. Устаревший вложенный workflow из Android-проекта исключён, чтобы не запускать вторую конкурирующую сборку.
+
+Переход подтверждён GitHub Actions run [43551446019](https://github.com/pdkiller666/Orfeus/actions/runs/43551446019): layout/signing-key check, каталог, Node tests, YIN и Gradle assemble прошли; build и publish jobs успешны. Создан [Release build-1028](https://github.com/pdkiller666/Orfeus/releases/tag/build-1028) с [APK](https://github.com/pdkiller666/Orfeus/releases/download/build-1028/orfey-android.apk) (5,856,315 bytes, HTTP 200), без функциональных изменений приложения.
