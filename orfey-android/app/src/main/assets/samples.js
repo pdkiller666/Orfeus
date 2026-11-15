@@ -511,13 +511,13 @@
     const summary=document.createElement("summary");summary.className="sample-public-summary";
     const summaryIcon=document.createElement("span");summaryIcon.className="icon-badge";summaryIcon.innerHTML=root.OrfeyIcons?root.OrfeyIcons.icon(synthetic?"music":"waveform","ui-icon",18):"";
     const summaryCopy=document.createElement("span");summaryCopy.className="sample-public-summary-copy";
-    const summaryKind=document.createElement("strong");summaryKind.textContent=synthetic?"Синтетический ориентир":"Запись преподавателя";
+    const summaryKind=document.createElement("strong");summaryKind.textContent=synthetic?"Технический тестовый сигнал":"Запись преподавателя";
     const summaryTitle=document.createElement("small");summaryTitle.textContent=sample.title;
     summaryCopy.append(summaryKind,summaryTitle);
     const summaryChevron=document.createElement("span");summaryChevron.className="sample-public-chevron";summaryChevron.innerHTML=root.OrfeyIcons?root.OrfeyIcons.icon("chevron","ui-icon",16):"";
     summary.append(summaryIcon,summaryCopy,summaryChevron);card.appendChild(summary);
     const content=document.createElement("div");content.className="sample-public-content";card.appendChild(content);
-    if(synthetic){const notice=document.createElement("p");notice.className="mu sm";notice.textContent="Синтетический сигнал — не голос и не педагогический эталон. Образцы преподавателей из открытых PR не меняют кнопку до слияния в main.";content.appendChild(notice);}
+    if(synthetic){const notice=document.createElement("p");notice.className="mu sm";notice.textContent="Технический синтетический сигнал — не голос, не piano-эталон и не педагогическая модель упражнения. Образцы преподавателей из открытых PR не меняют кнопку до слияния в main.";content.appendChild(notice);}
     const normalizeCopy=value=>String(value||"").trim().replace(/\s+/g," ").toLowerCase();
     const titleKey=normalizeCopy(sample.title),descriptionText=String(sample.description||"").trim(),descriptionKey=normalizeCopy(descriptionText);
     if(descriptionText&&descriptionKey!==titleKey){const description=document.createElement("p");description.className="sample-public-description";description.textContent=descriptionText;content.appendChild(description);}

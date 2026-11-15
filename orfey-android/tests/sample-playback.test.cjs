@@ -23,14 +23,26 @@ test('teacher sample button can stop playback; unmerged branch content is not us
 });
 
 test('sample and start are grouped, visually differentiated, and upload is separate', () => {
-  assert.match(html, /<div class="exercise-primary-actions" role="group"[^>]*><button class="btn btn-sample" data-exercise-demo="\$\{scr\.id\}"[^>]*>\$\{uiIcon\("music",20\)\}<span>Эталон<\/span><\/button><button class="btn btn-start" onclick="begin\('\$\{scr\.id\}'\)">\$\{uiIcon\("mic",20\)\}<span>Старт<\/span><\/button><\/div>/);
-  assert.match(html, /<section class="sample-tools card" aria-label="Образец и аудиозаписи"><div class="sample-tools-head"><b>Образец и аудиозаписи<\/b><button type="button" class="sample-upload-link" aria-label="Загрузить или записать аудиообразец"/);
+  assert.match(html, /data-exercise-demo="\$\{scr\.id\}"[^>]*title="\$\{referenceTitle\(scr\.id\)\}"[^>]*>\$\{uiIcon\("music",20\)\}<span>\$\{referenceLabel\(scr\.id\)\}<\/span>/);
+  assert.match(html, /<p class="mu sm reference-note">\$\{referenceHint\(scr\.id\)\}<\/p><section class="sample-tools card" aria-label="Дополнительные аудиоматериалы"><div class="sample-tools-head"><b>Дополнительные аудиоматериалы<\/b><button type="button" class="sample-upload-link" aria-label="Загрузить или записать аудиообразец"/);
   assert.match(html, /\.exercise-primary-actions \.btn-sample\{[^}]*background:var\(--gold-soft\)/);
   assert.match(html, /\.exercise-primary-actions \.btn-start\{[^}]*linear-gradient/);
   assert.match(samples, /const card=document\.createElement\("details"\);card\.className="sample-public card"/);
   assert.match(samples, /summaryTitle\.textContent=sample\.title/);
   assert.match(html, /\.sample-tools \.sample-public\{[^}]*background:var\(--bg\)/);
   assert.doesNotMatch(samples, /card\.open\s*=\s*true/);
+});
+
+test('reference labels distinguish piano cues from additional technical audio', () => {
+  assert.match(html, /function referenceLabel\(id\)/);
+  assert.match(html, /return"Пиано-эталон"/);
+  assert.match(html, /return"Ориентир громкости"/);
+  assert.match(html, /return"Пиано-ориентир диапазона"/);
+  assert.match(html, /function referenceHint\(id\)/);
+  assert.match(html, /if\(id==="range"\)\{const notes=\[base\(\)-12/);
+  assert.match(html, /else if\(id==="dyn"\)\{\[\.1,\.2,\.34\]/);
+  assert.match(samples, /Технический тестовый сигнал/);
+  assert.match(samples, /не голос, не piano-эталон и не педагогическая модель упражнения/);
 });
 
 test('published sample uses an accessible custom player with play/pause, seek and synchronized audio state', () => {
