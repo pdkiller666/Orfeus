@@ -148,6 +148,18 @@ test('range calibration requires robust boundaries and a real downward/upward sw
   assert.match(html, /const up=t>=60/);
   assert.match(html, /OrfeyCore\.summarizePitchRange\(st\.lo,st\.hi,20\)/);
   assert.match(html, /st\.loStart-st\.loEnd>=2&&st\.hiEnd-st\.hiStart>=2/);
+  assert.match(html, /range-direction-legend/);
+  assert.match(html, /Первые 60 секунд плавное движение вниз|первые 60 секунд плавное движение вниз/);
+  assert.match(html, /if\(run\.id==="range"\)/);
+  assert.match(html, /const low=36,high=84,mid=W\/2/);
+  assert.match(html, /g\.fillText\("ВНИЗ"/);
+  assert.match(html, /g\.fillText\("ВВЕРХ"/);
+});
+
+test('dynamics reference demo uses three distinct piano velocity levels', () => {
+  assert.match(html, /else if\(id==="dyn"\)\{\[\.1,\.2,\.34\]/);
+  assert.match(html, /T\+i\*1\.15,\.95,\{velocity:v,br:3800\}/);
+  assert.match(html, /dyn:\{c:"mic",t:"Динамика"/);
 });
 
 test('musical synthetic references use the shared piano-like voice', () => {
