@@ -57,6 +57,29 @@ test('progress normalization rejects invalid values and bounds stored history', 
   assert.equal(normalized.record, false);
 });
 
+test('range comparison history keeps only bounded, valid match records', () => {
+  const normalized = Core.normalizeState({
+    range: [48, 82],
+    rangeComparison: {
+      measured: [48, 82],
+      matches: [
+        { id: 'adele', lowDiff: 1.4, highDiff: 2.6, distance: 4 },
+        { id: 'bad', lowDiff: 'x', highDiff: 2, distance: 2 },
+        { id: 'freddie', lowDiff: 4, highDiff: 6, distance: 10 }
+      ],
+      measuredAt: '2026-11-15T10:00:00.000Z'
+    }
+  }, { range: null, rangeComparison: null });
+  assert.deepEqual(normalized.rangeComparison, {
+    measured: [48, 82],
+    matches: [
+      { id: 'adele', lowDiff: 1, highDiff: 3, distance: 4 },
+      { id: 'freddie', lowDiff: 4, highDiff: 6, distance: 10 }
+    ],
+    measuredAt: '2026-11-15T10:00:00.000Z'
+  });
+});
+
 
 test('lesson exercise progress normalizes imported values and counts only valid completed ids', () => {
   const normalized = Core.normalizeState({

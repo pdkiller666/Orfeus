@@ -156,6 +156,17 @@ test('range calibration requires robust boundaries and a real downward/upward sw
   assert.match(html, /g\.fillText\("ВВЕРХ"/);
 });
 
+test('measured range is compared and persisted in the profile without claiming voice identity', () => {
+  assert.match(html, /const SINGER_RANGES=\[/);
+  assert.match(html, /Фредди Меркьюри/);
+  assert.match(html, /function buildRangeComparison\(range\)/);
+  assert.match(html, /S\.rangeComparison=buildRangeComparison\(S\.range\)/);
+  assert.match(html, /Ближайшие публично описанные диапазоны/);
+  assert.match(html, /не утверждение о сходстве голоса, тембра или типа голоса/);
+  assert.match(html, /range-compare-card/);
+  assert.match(html, /rangeComparison:null/);
+});
+
 test('dynamics reference demo uses three distinct piano velocity levels', () => {
   assert.match(html, /else if\(id==="dyn"\)\{\[\.1,\.2,\.34\]/);
   assert.match(html, /T\+i\*1\.15,\.95,\{velocity:v,br:3800\}/);

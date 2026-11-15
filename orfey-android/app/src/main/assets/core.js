@@ -249,6 +249,29 @@
       && state.range[0] < state.range[1]
       ? state.range.map(value => clamp(value, 0, 127))
       : (base.range ?? null);
+    state.rangeComparison = isRecord(state.rangeComparison)
+      && Array.isArray(state.rangeComparison.measured)
+      && state.rangeComparison.measured.length === 2
+      && state.rangeComparison.measured.every(Number.isFinite)
+      && Array.isArray(state.rangeComparison.matches)
+      ? {
+          measured: state.rangeComparison.measured.map(value => clamp(Math.round(value), 0, 127)),
+          matches: state.rangeComparison.matches.filter(item => isRecord(item)
+            && typeof item.id === "string"
+            && Number.isFinite(item.lowDiff)
+            && Number.isFinite(item.highDiff)
+            && Number.isFinite(item.distance))
+            .slice(0, 5)
+            .map(item => ({
+              id: item.id,
+              lowDiff: clamp(Math.round(item.lowDiff), 0, 127),
+              highDiff: clamp(Math.round(item.highDiff), 0, 127),
+              distance: clamp(Math.round(item.distance), 0, 254)
+            })),
+          measuredAt: typeof state.rangeComparison.measuredAt === "string"
+            ? state.rangeComparison.measuredAt : ""
+        }
+      : (base.rangeComparison ?? null);
     state.seen = state.seen === true || state.seen === 1 ? 1 : 0;
     state.theme = ["", "dark", "light"].includes(state.theme) ? state.theme : "";
     state.record = state.record === true;
