@@ -146,8 +146,11 @@ test('melisma plays a reference tone at every target and minute exercises last a
 test('range calibration requires robust boundaries and a real downward/upward sweep', () => {
   assert.match(html, /dur:120,f\(fr,t,st\)/);
   assert.match(html, /const up=t>=60/);
-  assert.match(html, /OrfeyCore\.summarizePitchRange\(st\.lo,st\.hi,20\)/);
-  assert.match(html, /st\.loStart-st\.loEnd>=2&&st\.hiEnd-st\.hiStart>=2/);
+  assert.match(html, /OrfeyCore\.summarizePitchRange\(st\.lo,st\.hi,8\)/);
+  assert.match(html, /st\.rangeDirection=direction/);
+  assert.match(html, /Не слышу устойчивую ноту/);
+  assert.match(html, /держите телефон на расстоянии 20–40 см/);
+  assert.match(html, /Math\.max\(-58/);
   assert.match(html, /range-direction-legend/);
   assert.match(html, /Первые 60 секунд плавное движение вниз|первые 60 секунд плавное движение вниз/);
   assert.match(html, /if\(run\.id==="range"\)/);
@@ -165,6 +168,14 @@ test('measured range is compared and persisted in the profile without claiming v
   assert.match(html, /не утверждение о сходстве голоса, тембра или типа голоса/);
   assert.match(html, /range-compare-card/);
   assert.match(html, /rangeComparison:null/);
+});
+
+test('range result shows measured notes instead of hiding a usable approximate result behind zero percent', () => {
+  assert.match(html, /range:r\.id==="range"&&Array\.isArray\(S\.range\)\?S\.range:null/);
+  assert.match(html, /scr\.id==="range"&&scr\.range/);
+  assert.match(html, /nn\(scr\.range\[0\]\).*nn\(scr\.range\[1\]\)/);
+  assert.match(html, /Ваш примерный диапазон/);
+  assert.match(html, /Диапазон сохранён по устойчивым нотам/);
 });
 
 test('dynamics reference demo uses three distinct piano velocity levels', () => {

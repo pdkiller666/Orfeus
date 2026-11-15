@@ -131,7 +131,7 @@
     const lowCore = quantile(low, 0.2);
     const highCore = quantile(high, 0.8);
     const span = highEdge - lowEdge;
-    const stable = lowCore - lowEdge <= 2 && highEdge - highCore <= 2;
+    const stable = lowCore - lowEdge <= 3 && highEdge - highCore <= 3;
     if (!Number.isFinite(lowEdge) || !Number.isFinite(highEdge)
       || span < 7 || !stable) return null;
     return { low: lowEdge, high: highEdge, span };
