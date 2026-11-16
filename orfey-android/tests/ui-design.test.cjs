@@ -144,15 +144,15 @@ test('melisma plays a reference tone at every target and minute exercises last a
 });
 
 test('range calibration requires robust boundaries and a real downward/upward sweep', () => {
-  assert.match(html, /dur:120,f\(fr,t,st\)/);
-  assert.match(html, /const up=t>=60/);
+  assert.match(html, /dur:60,f\(fr,t,st\)/);
+  assert.match(html, /const up=t>=30/);
   assert.match(html, /OrfeyCore\.summarizePitchRange\(st\.lo,st\.hi,8\)/);
   assert.match(html, /st\.rangeDirection=direction/);
   assert.match(html, /Не слышу устойчивую ноту/);
   assert.match(html, /держите телефон на расстоянии 20–40 см/);
   assert.match(html, /Math\.max\(-58/);
   assert.match(html, /range-direction-legend/);
-  assert.match(html, /Первые 60 секунд плавное движение вниз|первые 60 секунд плавное движение вниз/);
+  assert.match(html, /Первые 30 секунд плавное движение вниз|первые 30 секунд плавное движение вниз/);
   assert.match(html, /if\(run\.id==="range"\)/);
   assert.match(html, /const low=36,high=84,mid=W\/2/);
   assert.match(html, /g\.fillText\("ВНИЗ"/);
