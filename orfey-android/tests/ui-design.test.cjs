@@ -162,6 +162,17 @@ test('range calibration requires robust boundaries and a real downward/upward sw
 test('measured range is compared and persisted in the profile without claiming voice identity', () => {
   assert.match(html, /const SINGER_RANGES=\[/);
   assert.match(html, /Фредди Меркьюри/);
+  assert.match(html, /Michael Jackson/);
+  assert.match(html, /Whitney Houston/);
+  assert.match(html, /Céline Dion/);
+  assert.match(html, /Mariah Carey/);
+  assert.match(html, /Christina Aguilera/);
+  assert.match(html, /Lady Gaga/);
+  assert.match(html, /Bruno Mars/);
+  assert.match(html, /Ed Sheeran/);
+  assert.match(html, /Taylor Swift/);
+  assert.match(html, /Elton John/);
+  assert.equal((html.match(/\{id:"[^"]+",name:/g) || []).length, 13);
   assert.match(html, /function buildRangeComparison\(range\)/);
   assert.match(html, /S\.rangeComparison=buildRangeComparison\(S\.range\)/);
   assert.match(html, /Ближайшие публично описанные диапазоны/);
