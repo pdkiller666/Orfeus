@@ -272,6 +272,20 @@
             ? state.rangeComparison.measuredAt : ""
         }
       : (base.rangeComparison ?? null);
+    state.rangeHistory = Array.isArray(state.rangeHistory)
+      ? state.rangeHistory.filter(item => isRecord(item)
+        && typeof item.d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(item.d)
+        && Array.isArray(item.range) && item.range.length === 2
+        && item.range.every(Number.isFinite)
+        && item.range[0] < item.range[1]
+        && Number.isFinite(item.matches))
+        .slice(-180)
+        .map(item => ({
+          d: item.d,
+          range: item.range.map(value => clamp(Math.round(value), 0, 127)),
+          matches: clamp(Math.round(item.matches), 0, 100)
+        }))
+      : (base.rangeHistory ?? []);
     state.seen = state.seen === true || state.seen === 1 ? 1 : 0;
     state.theme = ["", "dark", "light"].includes(state.theme) ? state.theme : "";
     state.record = state.record === true;

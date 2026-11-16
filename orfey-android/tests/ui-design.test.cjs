@@ -179,6 +179,14 @@ test('measured range is compared and persisted in the profile without claiming v
   assert.match(html, /не утверждение о сходстве голоса, тембра или типа голоса/);
   assert.match(html, /range-compare-card/);
   assert.match(html, /rangeComparison:null/);
+  assert.match(html, /function rangeMatchPercent\(distance\)/);
+  assert.match(html, /Процент — ориентир по двум крайним нотам/);
+  assert.match(html, /onclick="tone\(fq\(\$\{singer\.low\}/);
+  assert.match(html, /onclick="tone\(fq\(\$\{singer\.high\}/);
+  assert.match(html, /rangeHistory:\[\]/);
+  assert.match(html, /rangeHistory\.push\(entry\)/);
+  assert.match(html, /range-stats/);
+  assert.match(html, /Изменения по дням/);
 });
 
 test('range result shows measured notes instead of hiding a usable approximate result behind zero percent', () => {

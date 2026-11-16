@@ -80,6 +80,21 @@ test('range comparison history keeps only bounded, valid match records', () => {
   });
 });
 
+test('range history keeps valid daily measurements and removes malformed entries', () => {
+  const normalized = Core.normalizeState({
+    rangeHistory: [
+      { d: '2026-11-15', range: [48.4, 82.2], matches: 76.4 },
+      { d: 'bad-date', range: [40, 80], matches: 50 },
+      { d: '2026-11-16', range: [70, 60], matches: 50 },
+      { d: '2026-11-17', range: [45, 86], matches: 102 }
+    ]
+  }, { rangeHistory: [] });
+  assert.deepEqual(normalized.rangeHistory, [
+    { d: '2026-11-15', range: [48, 82], matches: 76 },
+    { d: '2026-11-17', range: [45, 86], matches: 100 }
+  ]);
+});
+
 
 test('lesson exercise progress normalizes imported values and counts only valid completed ids', () => {
   const normalized = Core.normalizeState({
