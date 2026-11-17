@@ -159,6 +159,15 @@ test('range calibration requires robust boundaries and a real downward/upward sw
   assert.match(html, /g\.fillText\("ВВЕРХ"/);
 });
 
+test('range diagnosis exposes a live timer, phase label, and accessible visual progress', () => {
+  assert.match(html, /id="rangeTimer" aria-label="Осталось времени">1:00/);
+  assert.match(html, /id="rangePhase">Подготовка/);
+  assert.match(html, /class="range-timeline" role="progressbar" aria-label="Прогресс диагностики диапазона"/);
+  assert.match(html, /id="rangeProgressFill"/);
+  assert.match(html, /const remaining=Math\.max\(0,Math\.ceil\(r\.ex\.dur-t\)\)/);
+  assert.match(html, /t<30\?"Вниз — ведите голос мягко вниз":"Вверх — ведите голос мягко вверх"/);
+  assert.match(html, /rangeProgressFill/);
+});
 test('measured range is compared and persisted in the profile without claiming voice identity', () => {
   assert.match(html, /const SINGER_RANGES=\[/);
   assert.match(html, /Фредди Меркьюри/);
