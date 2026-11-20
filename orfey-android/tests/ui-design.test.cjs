@@ -168,6 +168,12 @@ test('range diagnosis exposes a live timer, phase label, and accessible visual p
   assert.match(html, /t<30\?"Вниз — ведите голос мягко вниз":"Вверх — ведите голос мягко вверх"/);
   assert.match(html, /rangeProgressFill/);
 });
+test('range diagnosis cues the lower-to-upper transition once at 30 seconds', () => {
+  assert.match(html, /function rangeTransitionCue\(\)\{[^}]*tone\(fq\(72\),\.24\)/);
+  assert.match(html, /navigator\.vibrate\(\[35,30,35\]\)/);
+  assert.match(html, /const crossedRangeMidpoint=r\.id==="range"&&!r\.rangeCuePlayed&&t>=30/);
+  assert.match(html, /if\(crossedRangeMidpoint\)\{r\.rangeCuePlayed=true;rangeTransitionCue\(\)\}/);
+});
 test('measured range is compared and persisted in the profile without claiming voice identity', () => {
   assert.match(html, /const SINGER_RANGES=\[/);
   assert.match(html, /Фредди Меркьюри/);
